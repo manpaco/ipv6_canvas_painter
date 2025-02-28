@@ -23,10 +23,10 @@ parser.add_argument('-r', '--reverse', action='store_true', help='draw the image
 parser.add_argument('--verbose', action='store_true', help='print the ping command before executing')
 args = parser.parse_args()
 
+# Verify arguments
 if args.delay < 0:
     print('Error: delay must be greater than or equal to 0')
     sys.exit(1)
-
 if args.x < 0 or args.y < 0:
     print('Error: x and y must be greater than or equal to 0')
     sys.exit(1)
@@ -45,6 +45,7 @@ img = img.convert('RGBA')
 width, height = img.size
 pixels = width * height
 
+# Verify canvas boundaries
 if args.x + width > max or args.y + height > max:
     print('Error: you are trying to draw outside the canvas')
     if args.x + width > max:
@@ -53,9 +54,12 @@ if args.x + width > max or args.y + height > max:
         print(f'Suggested y: {max - height}')
     sys.exit(1)
 
+# Ping command
 ping = 'ping -6 -c 1'
 if platform.system() == 'Windows':
     ping = 'ping /6 /n 1'
+
+# Redirect output
 redirection = ' > /dev/null'
 if platform.system() == 'Windows':
     redirection = ' > NUL'
