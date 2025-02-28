@@ -13,14 +13,25 @@ baseip = '2602:f75c:c0::'
 max = 65535
 
 # Parse arguments
-parser = argparse.ArgumentParser(description='Draw an image by sending ICMP packets (AKA pings) to an IPv6 address')
+parser = argparse.ArgumentParser(description='Draw an image by sending ICMP '
+                                 'packets (AKA pings) to an IPv6 address')
 parser.add_argument('image', help='The image to draw')
-parser.add_argument('-x', type=int, default=0, help='the x coordinate to start drawing at. default: 0 (int)')
-parser.add_argument('-y', type=int, default=0, help='the y coordinate to start drawing at. default: 0 (int)')
-parser.add_argument('-d', '--delay', type=float, default=1, help='the delay between each pixel in seconds. default: 1 (float)')
-parser.add_argument('-b', '--baseip', default=baseip, help=f'the base IPv6 address to draw to. format: {{BASEIP}}XXXX:YYYY:RRGG:BBAA. default: {baseip} (str)')
-parser.add_argument('-r', '--reverse', action='store_true', help='draw the image in reverse order')
-parser.add_argument('--verbose', action='store_true', help='print the ping command before executing')
+parser.add_argument('-x', type=int, default=0,
+                    help='the x coordinate to start drawing at. default: 0 '
+                    '(int)')
+parser.add_argument('-y', type=int, default=0,
+                    help='the y coordinate to start drawing at. default: 0 '
+                    '(int)')
+parser.add_argument('-d', '--delay', type=float, default=1,
+                    help='the delay between each pixel in seconds. default: 1 '
+                    '(float)')
+parser.add_argument('-b', '--baseip', default=baseip,
+                    help=f'the base IPv6 address to draw to. format: '
+                    f'{{BASEIP}}XXXX:YYYY:RRGG:BBAA. default: {baseip} (str)')
+parser.add_argument('-r', '--reverse', action='store_true',
+                    help='draw the image in reverse order')
+parser.add_argument('--verbose', action='store_true',
+                    help='print the ping command before executing')
 args = parser.parse_args()
 
 # Verify arguments
@@ -78,11 +89,12 @@ for x in range(width):
             y = height - y - 1
         newy = args.y + y
         r, g, b, a = img.getpixel((x, y))
-        address = f'{args.baseip}{newx:04x}:{newy:04x}:{r:02x}{g:02x}:{b:02x}{a:02x}'
+        address = f'{args.baseip}{newx:04x}:{newy:04x}:' \
+                  f'{r:02x}{g:02x}:{b:02x}{a:02x}'
         command = f'{ping} {address}{redirection}'
         if args.verbose:
             print(command)
-        os.system(command)
+        # os.system(command)
         drawn += 1
         print(f'Drawn pixels: {drawn}/{pixels}', end='\r')
         time.sleep(args.delay)
