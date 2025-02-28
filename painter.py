@@ -53,6 +53,13 @@ if args.x + width > max or args.y + height > max:
         print(f'Suggested y: {max - height}')
     sys.exit(1)
 
+ping = 'ping -6 -c 1'
+if platform.system() == 'Windows':
+    ping = 'ping /6 /n 1'
+redirection = ' > /dev/null'
+if platform.system() == 'Windows':
+    redirection = ' > NUL'
+
 drawn = 0
 # Draw the image
 for x in range(width):
@@ -65,13 +72,7 @@ for x in range(width):
         newy = args.y + y
         r, g, b, a = img.getpixel((x, y))
         address = f'{args.baseip}{newx:04x}:{newy:04x}:{r:02x}{g:02x}:{b:02x}{a:02x}'
-        command = 'ping -6 -c 1'
-        if platform.system() == 'Windows':
-            command = 'ping /6 /n 1'
-        redirection = ' > /dev/null'
-        if platform.system() == 'Windows':
-            redirection = ' > NUL'
-        command = f'{command} {address}{redirection}'
+        command = f'{ping} {address}{redirection}'
         if args.verbose:
             print(command)
         os.system(command)
