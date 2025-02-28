@@ -67,6 +67,9 @@ if platform.system() == 'Windows':
 drawn = 0
 # Draw the image
 for x in range(width):
+    # Contrary to C/C++, it doesn't matter if you change the value of the loop
+    # variable because on the next iteration it will be assigned the next
+    # element from the list.
     if args.reverse:
         x = width - x - 1
     newx = args.x + x
