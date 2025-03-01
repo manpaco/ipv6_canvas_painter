@@ -12,6 +12,7 @@ from PIL import Image
 # canvas.openbased.com
 base_ip = '2602:f75c:c0::'
 max = 65535
+version = '0.1.0'
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Draw an image by sending ICMP '
@@ -36,6 +37,8 @@ parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the image in reverse order')
 parser.add_argument('--verbose', action='store_true',
                     help='print the ping command before executing')
+parser.add_argument('--version', action='version',
+                    version=f'%(prog)s {version}')
 args = parser.parse_args()
 
 # Verify arguments
