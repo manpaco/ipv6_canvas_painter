@@ -24,8 +24,7 @@ cd to_paint || exit 1
 unset -v files
 for link in *; do
     if [[ -h "$link" ]]; then
-        target="$(readlink -f "$link")"
-        files+=("$target")
+        files+=("$(readlink -f "$link")")
     fi
 done
 if [[ ${#files[@]} -eq 0 ]]; then
