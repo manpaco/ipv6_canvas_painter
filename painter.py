@@ -17,14 +17,14 @@ parser = argparse.ArgumentParser(description='Draw an image by sending ICMP '
                                  'packets (AKA pings) to an IPv6 address')
 parser.add_argument('image', help='the image to draw')
 parser.add_argument('-x', type=int, default=0,
-                    help='the x coordinate to start drawing at. default: 0 '
-                    '(int)')
+                    help='the x coordinate of the canvas to start drawing at. '
+                    'default: 0 (int)')
 parser.add_argument('-y', type=int, default=0,
-                    help='the y coordinate to start drawing at. default: 0 '
-                    '(int)')
+                    help='the y coordinate of the canvas to start drawing at. '
+                    'default: 0 (int)')
 parser.add_argument('-c', '--coordinates', type=str, default=None,
-                    help='read coordinates from a file. Overrides -x and -y '
-                    'arguments. content_format: X,Y', metavar='FILE')
+                    help='read canvas coordinates from a file. Overrides -x '
+                    'and -y arguments. content_format: X,Y', metavar='FILE')
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
