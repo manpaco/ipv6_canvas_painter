@@ -16,7 +16,7 @@ This symlink points to the directory that contains the painting tool, e.g. `pain
 
 ### The trick
 
-The pointed image files must have in the same directory a file with the same name and the extension `.xy`. This special file contains the canvas coordinates to start painting.
+The pointed image files must have in the same directory a file with the same name and the extension `.xy`. This special file contains the canvas coordinates to start painting. You can see the (images)[../images] directory in this repository for examples.
 
 Finaly the tool is called with the pointed image file and the `.xy` file as arguments.
 
