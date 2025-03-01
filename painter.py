@@ -7,7 +7,8 @@ import argparse
 import platform
 from PIL import Image
 
-# OpenBased Canvas IPv6 address
+# VPS IPv6 address (first 64 bits)
+# Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
 # canvas.openbased.com
 base_ip = '2602:f75c:c0::'
 max = 65535
@@ -29,8 +30,7 @@ parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
 parser.add_argument('-b', '--base-ip', default=base_ip,
-                    help=f'the base IPv6 address to draw to. '
-                    'format: {BASE_IP}XXXX:YYYY:RRGG:BBAA. '
+                    help=f'the first 64 bits of the IPv6 address to draw to. '
                     f'default: {base_ip} (str)')
 parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the image in reverse order')
