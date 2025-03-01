@@ -35,6 +35,9 @@ parser.add_argument('-b', '--base-ip', default=base_ip,
                     f'default: {base_ip} (str)')
 parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the image in reverse order')
+parser.add_argument('--dry-run', action='store_true',
+                    help='run but not draw in the canvas, do not send '
+                    'ICMP packets')
 parser.add_argument('--verbose', action='store_true',
                     help='print the ping command before executing')
 parser.add_argument('--version', action='version',
@@ -120,7 +123,8 @@ for x in range(width):
         command = f'{ping} {address}{redirection}'
         if args.verbose:
             print(command)
-        os.system(command)
+        if not args.dry_run:
+            os.system(command)
         drawn += 1
         print(f'Drawn pixels: {drawn}/{pixels}', end='\r')
         time.sleep(args.delay)
