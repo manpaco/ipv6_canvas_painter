@@ -20,7 +20,7 @@ Install the requirements:
 
 Run the script:
 
-    ./painter.py -x 38650 -y 45582 -d 0.1 Flag_of_Argentina.png
+    ./painter.py -x <xcoord> -y <ycoord> Flag_of_Argentina.png
 
 ## How to get help?
 
