@@ -4,7 +4,7 @@
 
 Clone the repository:
 
-    git clone https://github.com/manpaco/canvas_ipv6.git && cd canvas_ipv6
+    git clone https://github.com/manpaco/ipv6_canvas_painter.git && cd canvas_ipv6
 
 Run the script:
 
