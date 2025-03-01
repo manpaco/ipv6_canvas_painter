@@ -41,7 +41,7 @@ parser.add_argument('--dry-run', action='store_true',
 parser.add_argument('--verbose', action='store_true',
                     help='print the ping command before executing')
 parser.add_argument('--version', action='version',
-                    version=f'%(prog)s {version}')
+                    version=f'%(prog)s v{version}')
 args = parser.parse_args()
 
 # Verify arguments
