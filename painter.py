@@ -24,7 +24,7 @@ parser.add_argument('-y', type=int, default=0,
                     '(int)')
 parser.add_argument('-c', '--coordinates', type=str, default=None,
                     help='read coordinates from a file. Overrides -x and -y '
-                    'arguments', metavar='FILE')
+                    'arguments. content_format: X,Y', metavar='FILE')
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
