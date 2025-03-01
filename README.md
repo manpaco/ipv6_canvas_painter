@@ -27,3 +27,7 @@ Run the script:
 Execute the following command:
 
     ./painter.py -h
+
+## More info
+
+Please visit [this repository](https://gitlab.com/zipdox/ipv6-canvas) to get detailed information about the canvas web app.
