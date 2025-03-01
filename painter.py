@@ -9,7 +9,7 @@ from PIL import Image
 
 # OpenBased Canvas IPv6 address
 # canvas.openbased.com
-baseip = '2602:f75c:c0::'
+base_ip = '2602:f75c:c0::'
 max = 65535
 
 # Parse arguments
@@ -28,9 +28,10 @@ parser.add_argument('-c', '--coordinates', type=str, default=None,
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
-parser.add_argument('-b', '--baseip', default=baseip,
-                    help=f'the base IPv6 address to draw to. format: '
-                    f'{{BASEIP}}XXXX:YYYY:RRGG:BBAA. default: {baseip} (str)')
+parser.add_argument('-b', '--base-ip', default=base_ip,
+                    help=f'the base IPv6 address to draw to. '
+                    'format: {BASE_IP}XXXX:YYYY:RRGG:BBAA. '
+                    f'default: {base_ip} (str)')
 parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the image in reverse order')
 parser.add_argument('--verbose', action='store_true',
@@ -111,7 +112,7 @@ for x in range(width):
             y = height - y - 1
         newy = args.y + y
         r, g, b, a = img.getpixel((x, y))
-        address = f'{args.baseip}{newx:04x}:{newy:04x}:' \
+        address = f'{args.base_ip}{newx:04x}:{newy:04x}:' \
                   f'{r:02x}{g:02x}:{b:02x}{a:02x}'
         command = f'{ping} {address}{redirection}'
         if args.verbose:
