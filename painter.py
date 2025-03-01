@@ -94,7 +94,7 @@ for x in range(width):
         command = f'{ping} {address}{redirection}'
         if args.verbose:
             print(command)
-        # os.system(command)
+        os.system(command)
         drawn += 1
         print(f'Drawn pixels: {drawn}/{pixels}', end='\r')
         time.sleep(args.delay)
