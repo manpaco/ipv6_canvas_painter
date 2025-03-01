@@ -77,11 +77,13 @@ if width < 1 or height < 1:
 pixels = width * height
 
 # Verify canvas boundaries
-if args.x + width - 1 > max or args.y + height - 1 > max:
+exceeds_x = args.x + width - 1 > max
+exceeds_y = args.y + height - 1 > max
+if exceeds_x or exceeds_y:
     print('Error: you are trying to draw outside the canvas')
-    if args.x + width > max:
+    if exceeds_x:
         print(f'Suggested x: {max - width + 1}')
-    if args.y + height > max:
+    if exceeds_y:
         print(f'Suggested y: {max - height + 1}')
     sys.exit(1)
 
