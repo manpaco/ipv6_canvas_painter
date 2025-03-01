@@ -71,6 +71,9 @@ img = img.convert('RGBA')
 
 # Size of the image
 width, height = img.size
+if width < 1 or height < 1:
+    print('Error: the image must have at least 1 pixel')
+    sys.exit(1)
 pixels = width * height
 
 # Verify canvas boundaries
