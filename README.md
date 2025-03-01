@@ -1,4 +1,4 @@
-# Canvas IPv6
+# IPv6 Canvas Painter
 
 ## How to run?
 
