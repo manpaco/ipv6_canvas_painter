@@ -18,9 +18,11 @@ Install the requirements:
 
     pip install -r requirements.txt
 
-Run the script:
+Run the tool:
 
     ./painter.py -x 38700 -y 45600 -d 0.1 images/Flag_of_Argentina.png
+
+...or configure the [wrapper script](/wrapper).
 
 ## How to get help?
 
