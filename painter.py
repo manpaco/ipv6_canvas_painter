@@ -112,3 +112,6 @@ for x in range(width):
         drawn += 1
         print(f'Drawn pixels: {drawn}/{pixels}', end='\r')
         time.sleep(args.delay)
+
+img.close()
+print('\nDone!')
