@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PROGRAM_DIR="$(dirname "$(readlink -f "$0")")"
+PROGRAM_DIR="$(dirname "$(readlink "$0")")"
 cd "$PROGRAM_DIR" || exit 1
 
 [[ -h painter_dir ]] || {
