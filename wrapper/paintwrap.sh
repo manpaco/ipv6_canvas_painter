@@ -3,15 +3,15 @@
 PROGRAM_DIR="$(dirname "$(readlink "$0")")"
 cd "$PROGRAM_DIR" || exit 1
 
-# The painter_dir symlink should point to the directory
+# The tool_dir symlink should point to the directory
 # containing the painter.py script
-[[ -h painter_dir ]] || {
-    echo "No painter_dir symlink found in $(pwd)" >&2
+[[ -h tool_dir ]] || {
+    echo "No tool_dir symlink found in $(pwd)" >&2
     exit 1
 }
-painter_dir="$(readlink -f painter_dir)"
-if [[ ! -d "$painter_dir" ]]; then
-    echo "painter_dir symlink points to non-existent directory" >&2
+tool_dir="$(readlink -f tool_dir)"
+if [[ ! -d "$tool_dir" ]]; then
+    echo "tool_dir symlink points to non-existent directory" >&2
     exit 1
 fi
 
@@ -34,7 +34,7 @@ if [[ ${#files[@]} -eq 0 ]]; then
 fi
 
 # Activate the virtual environment
-cd "$painter_dir" || exit 1
+cd "$tool_dir" || exit 1
 if [[ ! -d venv ]]; then
     echo "Virtual environment not found in $(pwd)" >&2
     exit 1
