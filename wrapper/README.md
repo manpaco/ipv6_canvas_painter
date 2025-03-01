@@ -8,7 +8,7 @@ The wrapper needs to be installed in a directory that contains two components: `
 
 ### `to_paint` directory
 
-This directory contains symlinked image files that are going to be painted.
+This directory contains symlinked image files that are going to be painted. If you want to paint a new image, you must create a symlink to the image file in this directory.
 
 ### `tool_dir` symlink
 
