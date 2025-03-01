@@ -15,26 +15,26 @@ max = 65535
 # Parse arguments
 parser = argparse.ArgumentParser(description='Draw an image by sending ICMP '
                                  'packets (AKA pings) to an IPv6 address')
-parser.add_argument('image', help='The image to draw')
+parser.add_argument('image', help='the image to draw')
 parser.add_argument('-x', type=int, default=0,
-                    help='The x coordinate to start drawing at. default: 0 '
+                    help='the x coordinate to start drawing at. default: 0 '
                     '(int)')
 parser.add_argument('-y', type=int, default=0,
-                    help='The y coordinate to start drawing at. default: 0 '
+                    help='the y coordinate to start drawing at. default: 0 '
                     '(int)')
 parser.add_argument('-c', '--coordinates', type=str, default=None,
-                    help='Read coordinates from a file. Overrides -x and -y '
+                    help='read coordinates from a file. Overrides -x and -y '
                     'arguments. content_format: X,Y', metavar='FILE')
 parser.add_argument('-d', '--delay', type=float, default=1,
-                    help='The delay between each pixel in seconds. default: 1 '
+                    help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
 parser.add_argument('-b', '--baseip', default=baseip,
-                    help=f'The base IPv6 address to draw to. format: '
+                    help=f'the base IPv6 address to draw to. format: '
                     f'{{BASEIP}}XXXX:YYYY:RRGG:BBAA. default: {baseip} (str)')
 parser.add_argument('-r', '--reverse', action='store_true',
-                    help='Draw the image in reverse order')
+                    help='draw the image in reverse order')
 parser.add_argument('--verbose', action='store_true',
-                    help='Print the ping command before executing')
+                    help='print the ping command before executing')
 args = parser.parse_args()
 
 # Verify arguments
