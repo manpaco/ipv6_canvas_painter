@@ -15,21 +15,21 @@ if [[ ! -d "$tool_dir" ]]; then
     exit 1
 fi
 
-if [[ ! -d images ]]; then
-    echo "No images directory found in $(pwd)" >&2
+if [[ ! -d to_paint ]]; then
+    echo "No to_paint directory found in $(pwd)" >&2
     exit 1
 fi
-cd images || exit 1
-# Read all symlinks in the images directory
+cd to_paint || exit 1
+# Read all symlinks in the to_paint directory
 unset -v files
-for path in *; do
-    if [[ -h "$path" ]]; then
-        target="$(readlink -f "$path")"
+for link in *; do
+    if [[ -h "$link" ]]; then
+        target="$(readlink -f "$link")"
         files+=("$target")
     fi
 done
 if [[ ${#files[@]} -eq 0 ]]; then
-    echo "No images found in $(pwd)" >&2
+    echo "No symlinks found in $(pwd)" >&2
     exit 1
 fi
 
