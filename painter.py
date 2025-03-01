@@ -24,6 +24,9 @@ parser.add_argument('-x', type=int, default=0,
 parser.add_argument('-y', type=int, default=0,
                     help='the y coordinate of the canvas to start drawing at. '
                     'default: 0 (int)')
+parser.add_argument('-c', '--coordinates', type=str, default=None,
+                    help='read canvas coordinates from a file. '
+                    'content_format: X,Y', metavar='FILE')
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
@@ -45,6 +48,20 @@ args = parser.parse_args()
 if args.delay < 0:
     print('Error: delay must be greater than or equal to 0')
     sys.exit(1)
+if args.coordinates:
+    if args.x != 0 or args.y != 0:
+        print('Error: -x and -y arguments are not allowed with -c argument')
+        sys.exit(1)
+    try:
+        with open(args.coordinates) as f:
+            args.x, args.y = map(int, f.readline().split(','))
+    except FileNotFoundError:
+        print(f'Error: {args.coordinates} not found')
+        sys.exit(1)
+    except ValueError:
+        print(f'Error: {args.coordinates} must contain two integers separated '
+              'by a comma.\nExample: 123,456')
+        sys.exit(1)
 if args.x < 0 or args.y < 0:
     print('Error: x and y must be greater than or equal to 0')
     sys.exit(1)
