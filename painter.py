@@ -23,7 +23,7 @@ parser.add_argument('-y', type=int, default=0,
                     help='the y coordinate of the canvas to start drawing at. '
                     'default: 0 (int)')
 parser.add_argument('-c', '--coordinates', type=str, default=None,
-                    help='read canvas coordinates from a file. Overrides -x '
+                    help='read canvas coordinates from a file, overrides -x '
                     'and -y arguments. content_format: X,Y', metavar='FILE')
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
