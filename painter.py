@@ -348,9 +348,5 @@ for y in range(height):
         print(f'Drawn pixels: {drawn}/{pixels}', end='\r')
         time.sleep(args.delay)
 
-# Close the source
-if not args.fill:
-    source.close()
-
 # Print the final message
 print('\nDone!')
