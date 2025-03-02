@@ -86,7 +86,8 @@ class Element:
         pass
 
     def __str__(self):
-        return f'{self.source} ({self.width}x{self.height})'
+        return f'{self.source} ({self.width}x{self.height}) with ' \
+               f'{self.pixels()} pixels'
 
 
 # Bitmap class to store: image
@@ -118,6 +119,9 @@ class Bitmap(Element):
     def close(self):
         self.img.close()
 
+    def __str__(self):
+        return 'Image: ' + super().__str__()
+
     def __del__(self):
         self.close()
 
@@ -140,6 +144,9 @@ class Filling(Element):
 
     def set_color(self, color):
         self.color = ImageColor.getrgb(f'#{color}')
+
+    def __str__(self):
+        return 'Filling: #' + super().__str__()
 
 
 # Parse arguments
@@ -305,6 +312,7 @@ if exceeds_x or exceeds_y:
 
 # Show information about the area
 print(f'Coordinates: {args.x},{args.y}')
+print(source)
 pixels = width * height
 print(f'Area size: {width}x{height} with {pixels} pixels')
 
