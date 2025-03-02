@@ -14,9 +14,9 @@ from PIL import ImageColor
 # canvas.openbased.com
 base_ip = '2602:f75c:c0::'
 magic_number = 8
-max = 65536
+max = 0x10000
 max_size = round(max / magic_number)
-max_color = 255
+max_color = 0xFF
 version = '0.1.0'
 # RRGGBBAA regex with optional alpha channel
 color_regex = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
