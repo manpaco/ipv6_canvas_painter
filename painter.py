@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 import time
 import argparse
 import platform
 from PIL import Image
+from PIL import ImageColor
 
 # VPS IPv6 address (first 64 bits)
 # Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
@@ -17,6 +19,114 @@ max_size = round(max / magic_number)
 version = '0.1.0'
 # RRGGBBAA regex with optional alpha channel
 color_regex = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
+bmp_mode = 'RGBA'
+
+
+# Element class to store
+class Element:
+    def __init__(self, source):
+        self.source = source
+        self.width = 0
+        self.height = 0
+
+    def get_pixel(self, x, y):
+        pass
+
+    def get_size(self):
+        return self.width, self.height
+
+    def set_size(self, width, height):
+        use_width = False
+        use_height = False
+        has_zeros = self.width == 0 or self.height == 0
+        if width != -1:
+            if width < 1:
+                print('Error: width must be greater than or equal to 1')
+                sys.exit(1)
+            if width > max_size:
+                print(f'Error: width must be less than or equal to {max_size}')
+                sys.exit(1)
+            use_width = True
+        if height != -1:
+            if height < 1:
+                print('Error: height must be greater than or equal to 1')
+                sys.exit(1)
+            if height > max_size:
+                print('Error: height must be less than or equal '
+                      f'to {max_size}')
+                sys.exit(1)
+            use_height = True
+
+        if use_width and use_height:
+            self.width = width
+            self.height = height
+            return
+        if use_width and self.width != width and not has_zeros:
+            aspect_ratio = self.width / self.height
+            self.height = round(width / aspect_ratio)
+            self.width = width
+            return
+        if use_height and self.height != height and not has_zeros:
+            aspect_ratio = self.height / self.width
+            self.width = round(height / aspect_ratio)
+            self.height = height
+            return
+
+    def pixels(self):
+        return self.width * self.height
+
+    def close(self):
+        pass
+
+    def __str__(self):
+        return f'{self.source} ({self.width}x{self.height})'
+
+
+class Bitmap(Element):
+    def __init__(self, source):
+        super().__init__(source)
+        try:
+            self.img = Image.open(source)
+        except FileNotFoundError:
+            print(f'Error: {source} not found')
+            sys.exit(1)
+        self.img = self.img.convert(bmp_mode)
+        self.width, self.height = self.img.size
+        if self.width < 1 or self.height < 1:
+            print('Error: the image must have at least 1 pixel')
+            sys.exit(1)
+
+    def get_pixel(self, x, y):
+        return self.img.getpixel((x, y))
+
+    def set_size(self, width, height):
+        super().set_size(width, height)
+        self.img = self.img.resize((self.width, self.height))
+
+    def close(self):
+        self.img.close()
+
+    def __del__(self):
+        self.close()
+
+
+class Filling(Element):
+    def __init__(self, source):
+        super().__init__(source)
+        if not re.match(color_regex, source):
+            print('Error: invalid color format')
+            sys.exit(1)
+        self.set_color(source)
+
+    def get_pixel(self, x, y):
+        if len(self.color) < 4:
+            return self.color[0], self.color[1], self.color[2], 0
+        else:
+            return self.color
+
+    def set_color(self, color):
+        self.color = ImageColor.getrgb(f'#{color}')
+
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
@@ -122,6 +232,9 @@ if args.x2 != -1 or args.y2 != -1:
         if args.x2 < args.x:
             print('Error: x2 must be greater than or equal to x')
             sys.exit(1)
+        if args.x2 >= max:
+            print(f'Error: x2 must be less than {max}')
+            sys.exit(1)
         args.width = args.x2 - args.x + 1
     if args.y2 != -1:
         if args.y2 < 0:
@@ -130,25 +243,10 @@ if args.x2 != -1 or args.y2 != -1:
         if args.y2 < args.y:
             print('Error: y2 must be greater than or equal to y')
             sys.exit(1)
+        if args.y2 >= max:
+            print(f'Error: y2 must be less than {max}')
+            sys.exit(1)
         args.height = args.y2 - args.y + 1
-use_width_arg = False
-if args.width != -1:
-    if args.width < 1:
-        print('Error: width must be greater than or equal to 1')
-        sys.exit(1)
-    if args.width > max_size:
-        print(f'Error: width must be less than or equal to {max_size}')
-        sys.exit(1)
-    use_width_arg = True
-use_height_arg = False
-if args.height != -1:
-    if args.height < 1:
-        print('Error: height must be greater than or equal to 1')
-        sys.exit(1)
-    if args.height > max_size:
-        print(f'Error: height must be less than or equal to {max_size}')
-        sys.exit(1)
-    use_height_arg = True
 if args.fill and (args.width == -1 or args.height == -1):
     print('Error: --fill option requires --width and --height, or '
           '--x2 and --y2 arguments')
@@ -157,34 +255,20 @@ if args.overflow and args.push:
     print('Error: --overflow and --push arguments are mutually exclusive')
     sys.exit(1)
 
-# Open the image
-try:
-    img = Image.open(args.source)
-except FileNotFoundError:
-    print(f'Error: {args.source} not found')
-    sys.exit(1)
+# Create the source
+if args.fill:
+    source = Filling(args.source)
+else:
+    source = Bitmap(args.source)
+    width, height = source.get_size()
+    if width > max_size or height > max_size:
+        print('Error: image size must be less than or equal to '
+              f'{max_size}x{max_size}')
+        sys.exit(1)
 
-# Convert the image to RGBA
-img = img.convert('RGBA')
-
-# Size of the source
-width, height = img.size
-if width < 1 or height < 1:
-    print('Error: the draw area must have at least 1 pixel')
-    sys.exit(1)
-if use_width_arg and use_height_arg:
-    img = img.resize((args.width, args.height))
-    width, height = img.size
-elif use_width_arg and args.height != height:
-    aspect_ratio = width / height
-    args.height = round(args.width / aspect_ratio)
-    img = img.resize((args.width, args.height))
-    width, height = img.size
-elif use_height_arg and args.width != width:
-    aspect_ratio = height / width
-    args.width = round(args.height / aspect_ratio)
-    img = img.resize((args.width, args.height))
-    width, height = img.size
+# Set the size of the source
+source.set_size(args.width, args.height)
+width, height = source.get_size()
 
 # Verify canvas boundaries
 exceeds_x = args.x + width > max
@@ -205,9 +289,10 @@ if exceeds_x or exceeds_y:
         if exceeds_y:
             args.y = max - height
 
-print(f'Canvas coordinates: {args.x},{args.y}')
+# Show information about the area
+print(f'Coordinates: {args.x},{args.y}')
 pixels = width * height
-print(f'Image size: {width}x{height} with {pixels} pixels')
+print(f'Area size: {width}x{height} with {pixels} pixels')
 
 # Ping command
 ping = 'ping -6 -c 1'
@@ -232,7 +317,7 @@ for y in range(height):
         if args.reverse:
             x = width - x - 1
         newx = args.x + x
-        r, g, b, a = img.getpixel((x, y))
+        r, g, b, a = source.get_pixel(x, y)
         if args.skip_transparent and a == 0:
             continue
         address = f'{args.base_ip}{newx:04x}:{newy:04x}:' \
@@ -246,5 +331,9 @@ for y in range(height):
         print(f'Drawn pixels: {drawn}/{pixels}', end='\r')
         time.sleep(args.delay)
 
-img.close()
+# Close the source
+if not args.fill:
+    source.close()
+
+# Print the final message
 print('\nDone!')
