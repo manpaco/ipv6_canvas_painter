@@ -13,7 +13,7 @@ from PIL import Image
 base_ip = '2602:f75c:c0::'
 magic_number = 8
 max = 65536
-max_size = max / magic_number
+max_size = round(max / magic_number)
 version = '0.1.0'
 
 # Parse arguments
@@ -58,6 +58,9 @@ parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the image in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip transparent pixels')
+parser.add_argument('--overflow', action='store_true',
+                    help='allow drawing if the image is outside the canvas, '
+                    'the image will be cropped')
 parser.add_argument('--dry-run', action='store_true',
                     help='run but not draw in the canvas, do not send '
                     'ICMP packets')
@@ -87,6 +90,9 @@ if args.coordinates:
         sys.exit(1)
 if args.x < 0 or args.y < 0:
     print('Error: x and y must be greater than or equal to 0')
+    sys.exit(1)
+if args.x >= max or args.y >= max:
+    print(f'Error: x and y must be less than {max}')
     sys.exit(1)
 print(f'Canvas coordinates: {args.x},{args.y}')
 if args.x2 != -1 or args.y2 != -1:
@@ -157,20 +163,25 @@ elif use_height_arg and args.width != width:
     args.width = round(args.height / aspect_ratio)
     img = img.resize((args.width, args.height))
     width, height = img.size
-print(f'Image size: {width}x{height}')
-
-pixels = width * height
 
 # Verify canvas boundaries
 exceeds_x = args.x + width > max
 exceeds_y = args.y + height > max
 if exceeds_x or exceeds_y:
-    print('Error: you are trying to draw outside the canvas')
+    if not args.overflow:
+        print('Error: you are trying to draw outside the canvas')
+        if exceeds_x:
+            print(f'Suggested x: {max - width}')
+        if exceeds_y:
+            print(f'Suggested y: {max - height}')
+        sys.exit(1)
     if exceeds_x:
-        print(f'Suggested x: {max - width}')
+        width = max - args.x
     if exceeds_y:
-        print(f'Suggested y: {max - height}')
-    sys.exit(1)
+        height = max - args.y
+
+pixels = width * height
+print(f'Image size: {width}x{height} with {pixels} pixels')
 
 # Ping command
 ping = 'ping -6 -c 1'
