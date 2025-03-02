@@ -39,7 +39,7 @@ class Element:
 
     # Set element size:
     # if width and height are != -1 --> use both values without using aspect
-    # if one of them is == -1 --> use aspect ratio to calculate to other one
+    # if ONE of them is != -1 --> use aspect ratio to calculate to other one
     # Before run verifications
     def set_size(self, width, height):
         use_width = False
