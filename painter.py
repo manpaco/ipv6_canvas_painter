@@ -58,8 +58,11 @@ parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the image in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip transparent pixels')
+parser.add_argument('--push', action='store_true',
+                    help='allow drawing despite exceeding the canvas, '
+                    'the image will be pushed to the left and/or top')
 parser.add_argument('--overflow', action='store_true',
-                    help='allow drawing if the image is outside the canvas, '
+                    help='allow drawing despite exceeding the canvas, '
                     'the image will be cropped')
 parser.add_argument('--dry-run', action='store_true',
                     help='run but not draw in the canvas, do not send '
@@ -94,7 +97,6 @@ if args.x < 0 or args.y < 0:
 if args.x >= max or args.y >= max:
     print(f'Error: x and y must be less than {max}')
     sys.exit(1)
-print(f'Canvas coordinates: {args.x},{args.y}')
 if args.x2 != -1 or args.y2 != -1:
     if args.width != -1 or args.height != -1:
         print('Error: -w and -h arguments are not allowed with --x2 and --y2 '
@@ -134,6 +136,9 @@ if args.height != -1:
         print(f'Error: height must be less than or equal to {max_size}')
         sys.exit(1)
     use_height_arg = True
+if args.overflow and args.push:
+    print('Error: --overflow and --push arguments are mutually exclusive')
+    sys.exit(1)
 
 # Open the image
 try:
@@ -168,18 +173,22 @@ elif use_height_arg and args.width != width:
 exceeds_x = args.x + width > max
 exceeds_y = args.y + height > max
 if exceeds_x or exceeds_y:
-    if not args.overflow:
+    if not args.overflow and not args.push:
         print('Error: you are trying to draw outside the canvas')
-        if exceeds_x:
-            print(f'Suggested x: {max - width}')
-        if exceeds_y:
-            print(f'Suggested y: {max - height}')
+        print('Use --overflow or --push to allow drawing')
         sys.exit(1)
-    if exceeds_x:
-        width = max - args.x
-    if exceeds_y:
-        height = max - args.y
+    if args.overflow:
+        if exceeds_x:
+            width = max - args.x
+        if exceeds_y:
+            height = max - args.y
+    if args.push:
+        if exceeds_x:
+            args.x = max - width
+        if exceeds_y:
+            args.y = max - height
 
+print(f'Canvas coordinates: {args.x},{args.y}')
 pixels = width * height
 print(f'Image size: {width}x{height} with {pixels} pixels')
 
