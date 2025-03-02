@@ -205,7 +205,7 @@ parser.add_argument('--overflow', action='store_true',
                     'the draw area will be cropped')
 parser.add_argument('--dry-run', action='store_true',
                     help='run but not draw in the canvas, do not send '
-                    'ICMP packets')
+                    'ICMP packets. Useful to test commands')
 parser.add_argument('--verbose', action='store_true',
                     help='print the ping command before executing')
 parser.add_argument('--version', action='version',
