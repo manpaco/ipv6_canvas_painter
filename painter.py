@@ -264,7 +264,7 @@ if args.x2 != -1 or args.y2 != -1:
             sys.exit(1)
         args.height = args.y2 - args.y + 1
 if args.fill and (args.width == -1 or args.height == -1):
-    print('Error: --fill option requires --width and --height, or '
+    print('Error: --fill option requires --width and --height arguments, or '
           '--x2 and --y2 arguments')
     sys.exit(1)
 if args.overflow and args.push:
