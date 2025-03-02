@@ -1,4 +1,4 @@
-# Paint wrapper
+# Wrapper
 
 Automate your painting process with symlinks and crontab.
 
