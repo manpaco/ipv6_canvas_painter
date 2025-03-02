@@ -12,15 +12,15 @@ from PIL import ImageColor
 # VPS IPv6 address (first 64 bits)
 # Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
 # canvas.openbased.com
-base_ip = '2602:f75c:c0::'
-magic_number = 8
-max = 0x10000
-max_size = round(max / magic_number)
-max_color = 0xFF
-version = '0.1.0'
+BASE_IP = '2602:f75c:c0::'
+MAGIC_NUMBER = 8
+MAX = 0x10000
+MAX_SIZE = round(max / MAGIC_NUMBER)
+MAX_COLOR = 0xFF
+VERSION = '0.1.0'
 # RRGGBBAA regex with optional alpha channel
-color_regex = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
-bmp_mode = 'RGBA'
+COLOR_REGEX = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
+BMP_MODE = 'RGBA'
 
 
 # Element class to store: source, width, and height
@@ -49,17 +49,17 @@ class Element:
             if width < 1:
                 print('Error: width must be greater than or equal to 1')
                 sys.exit(1)
-            if width > max_size:
-                print(f'Error: width must be less than or equal to {max_size}')
+            if width > MAX_SIZE:
+                print(f'Error: width must be less than or equal to {MAX_SIZE}')
                 sys.exit(1)
             use_width = True
         if height != -1:
             if height < 1:
                 print('Error: height must be greater than or equal to 1')
                 sys.exit(1)
-            if height > max_size:
+            if height > MAX_SIZE:
                 print('Error: height must be less than or equal '
-                      f'to {max_size}')
+                      f'to {MAX_SIZE}')
                 sys.exit(1)
             use_height = True
 
@@ -96,7 +96,7 @@ class Bitmap(Element):
             print(f'Error: {source} not found')
             self.img = None
             sys.exit(1)
-        self.img = self.img.convert(bmp_mode)
+        self.img = self.img.convert(BMP_MODE)
         # Initializing element size (do not use self.set_size... nor
         # super().set_size...)
         self.width, self.height = self.img.size
@@ -125,7 +125,7 @@ class Bitmap(Element):
 class Filling(Element):
     def __init__(self, source):
         super().__init__(source)
-        if not re.match(color_regex, source):
+        if not re.match(COLOR_REGEX, source):
             print('Error: invalid color format')
             sys.exit(1)
         self.set_color(source)
@@ -133,7 +133,7 @@ class Filling(Element):
     # If the filling has no alpha channel then return an extra value
     def get_pixel(self, x, y):
         if len(self.color) < 4:
-            return self.color[0], self.color[1], self.color[2], max_color
+            return self.color[0], self.color[1], self.color[2], MAX_COLOR
         else:
             return self.color
 
@@ -190,9 +190,9 @@ parser.add_argument('-c', '--coordinates', default=None,
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
-parser.add_argument('-b', '--base-ip', default=base_ip,
+parser.add_argument('-b', '--base-ip', default=BASE_IP,
                     help=f'the first 64 bits of the IPv6 address to draw to. '
-                    f'default: {base_ip} (str)')
+                    f'default: {BASE_IP} (str)')
 parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the area in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
@@ -209,7 +209,7 @@ parser.add_argument('--dry-run', action='store_true',
 parser.add_argument('--verbose', action='store_true',
                     help='print the ping command before executing')
 parser.add_argument('--version', action='version',
-                    version=f'%(prog)s v{version}')
+                    version=f'%(prog)s v{VERSION}')
 args = parser.parse_args()
 
 # Verify arguments
@@ -277,9 +277,9 @@ if args.fill:
 else:
     source = Bitmap(args.source)
     width, height = source.get_size()
-    if width > max_size or height > max_size:
+    if width > MAX_SIZE or height > MAX_SIZE:
         print('Error: image size must be less than or equal to '
-              f'{max_size}x{max_size}')
+              f'{MAX_SIZE}x{MAX_SIZE}')
         sys.exit(1)
 
 # Set the size of the source
