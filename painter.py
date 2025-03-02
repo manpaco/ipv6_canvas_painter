@@ -196,7 +196,7 @@ parser.add_argument('-b', '--base-ip', default=BASE_IP,
 parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the area in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
-                    help='skip transparent pixels')
+                    help='skip completely transparent pixels')
 parser.add_argument('--push', action='store_true',
                     help='allow drawing despite exceeding the canvas, '
                     'the draw area will be pushed to the left and/or top')
