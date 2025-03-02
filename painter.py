@@ -81,10 +81,6 @@ class Element:
     def pixels(self):
         return self.width * self.height
 
-    # To override
-    def close(self):
-        pass
-
     def __str__(self):
         return f'{self.source} ({self.width}x{self.height}) with ' \
                f'{self.pixels()} pixels'
@@ -98,6 +94,7 @@ class Bitmap(Element):
             self.img = Image.open(source)
         except FileNotFoundError:
             print(f'Error: {source} not found')
+            self.img = None
             sys.exit(1)
         self.img = self.img.convert(bmp_mode)
         # Initializing element size (do not use self.set_size... nor
@@ -116,14 +113,12 @@ class Bitmap(Element):
         super().set_size(width, height)
         self.img = self.img.resize((self.width, self.height))
 
-    def close(self):
-        self.img.close()
-
     def __str__(self):
         return 'Image: ' + super().__str__()
 
     def __del__(self):
-        self.close()
+        if self.img is not None:
+            self.img.close()
 
 
 # Filling class to store: filling color
