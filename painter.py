@@ -15,10 +15,12 @@ magic_number = 8
 max = 65536
 max_size = round(max / magic_number)
 version = '0.1.0'
+# RRGGBBAA regex with optional alpha channel
+color_regex = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
 
 # Parse arguments
-parser = argparse.ArgumentParser(description='Draw an image by sending ICMP '
-                                 'packets (AKA pings) to an IPv6 address',
+parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
+                                 'ICMP packets (AKA pings) to an IPv6 address',
                                  epilog='When using --width and --height, or '
                                  '--x2 and --y2 arguments you can specify one '
                                  'of them and leave the script to calculate '
@@ -27,8 +29,16 @@ parser = argparse.ArgumentParser(description='Draw an image by sending ICMP '
                                  'resized without keeping the aspect ratio. '
                                  'If you specify -1 as value for '
                                  'any of them, the script will not take it '
-                                 'into account (as if it was not specified). ')
-parser.add_argument('image', help='the image to draw')
+                                 'into account (as if it was not specified). '
+                                 'When using the --fill option, you should '
+                                 'specify both --width and --height, or --x2 '
+                                 'and --y2 arguments.')
+parser.add_argument('object', metavar='image|color',
+                    help='the image or color to draw. Use the --fill option '
+                    'to fill with a color, but if --fill is not used then '
+                    'this argument must be an image file. The color must be '
+                    'in hexadecimal format, alpha channel is optional. '
+                    'color_format: RRGGBB[AA] (str)')
 parser.add_argument('-x', type=int, default=0,
                     help='the x coordinate of the canvas to start drawing at. '
                     'default: 0 (int)')
@@ -42,9 +52,12 @@ parser.add_argument('--y2', type=int, default=-1,
                     help='the y coordinate of the canvas to stop drawing at. '
                     'default: -1 (int)')
 parser.add_argument('--width', type=int, default=-1,
-                    help='the width of the image to draw. default: -1 (int)')
+                    help='the width of the area to draw. default: -1 (int)')
 parser.add_argument('--height', type=int, default=-1,
-                    help='the height of the image to draw. default: -1 (int)')
+                    help='the height of the area to draw. default: -1 (int)')
+parser.add_argument('-f', '--fill', action='store_true',
+                    help='use the specified color to fill the area, instead '
+                    'of drawing an image')
 parser.add_argument('-c', '--coordinates', default=None,
                     help='read canvas coordinates from a file. '
                     'content_format: X,Y', metavar='FILE')
@@ -55,15 +68,15 @@ parser.add_argument('-b', '--base-ip', default=base_ip,
                     help=f'the first 64 bits of the IPv6 address to draw to. '
                     f'default: {base_ip} (str)')
 parser.add_argument('-r', '--reverse', action='store_true',
-                    help='draw the image in reverse order')
+                    help='draw the area in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip transparent pixels')
 parser.add_argument('--push', action='store_true',
                     help='allow drawing despite exceeding the canvas, '
-                    'the image will be pushed to the left and/or top')
+                    'the draw area will be pushed to the left and/or top')
 parser.add_argument('--overflow', action='store_true',
                     help='allow drawing despite exceeding the canvas, '
-                    'the image will be cropped')
+                    'the draw area will be cropped')
 parser.add_argument('--dry-run', action='store_true',
                     help='run but not draw in the canvas, do not send '
                     'ICMP packets')
@@ -136,24 +149,28 @@ if args.height != -1:
         print(f'Error: height must be less than or equal to {max_size}')
         sys.exit(1)
     use_height_arg = True
+if args.fill and (args.width == -1 or args.height == -1):
+    print('Error: --fill option requires --width and --height, or '
+          '--x2 and --y2 arguments')
+    sys.exit(1)
 if args.overflow and args.push:
     print('Error: --overflow and --push arguments are mutually exclusive')
     sys.exit(1)
 
 # Open the image
 try:
-    img = Image.open(args.image)
+    img = Image.open(args.object)
 except FileNotFoundError:
-    print(f'Error: {args.image} not found')
+    print(f'Error: {args.object} not found')
     sys.exit(1)
 
 # Convert the image to RGBA
 img = img.convert('RGBA')
 
-# Size of the image
+# Size of the object
 width, height = img.size
 if width < 1 or height < 1:
-    print('Error: the image must have at least 1 pixel')
+    print('Error: the draw area must have at least 1 pixel')
     sys.exit(1)
 if use_width_arg and use_height_arg:
     img = img.resize((args.width, args.height))
@@ -203,7 +220,7 @@ if platform.system() == 'Windows':
     redirection = ' > NUL'
 
 drawn = 0
-# Draw the image
+# Draw the object
 for y in range(height):
     # Contrary to C/C++, it doesn't matter if you change the value of the loop
     # variable because on the next iteration it will be assigned the next
