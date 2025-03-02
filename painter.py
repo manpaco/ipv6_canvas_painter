@@ -16,6 +16,7 @@ base_ip = '2602:f75c:c0::'
 magic_number = 8
 max = 65536
 max_size = round(max / magic_number)
+max_color = 255
 version = '0.1.0'
 # RRGGBBAA regex with optional alpha channel
 color_regex = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
@@ -132,7 +133,7 @@ class Filling(Element):
     # If the filling has no alpha channel then return an extra value
     def get_pixel(self, x, y):
         if len(self.color) < 4:
-            return self.color[0], self.color[1], self.color[2], 0
+            return self.color[0], self.color[1], self.color[2], max_color
         else:
             return self.color
 
