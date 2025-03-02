@@ -1,5 +1,7 @@
 # IPv6 Canvas Painter
 
+Overengineered solution to draw images or fill areas on a canvas through IPv6 addresses.
+
 ## How to run?
 
 Clone the repository:
