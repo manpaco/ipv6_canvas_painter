@@ -44,5 +44,5 @@ source venv/bin/activate
 # Process all images
 for image in "${files[@]}"; do
     echo "Processing $image"
-    ./painter.py -c "${image}.xy" -d 0 --reverse "$image"
+    ./painter.py -c "${image}.xy" -d 0 --reverse --skip-transparent "$image"
 done
