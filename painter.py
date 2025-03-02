@@ -33,7 +33,7 @@ parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'When using the --fill option, you should '
                                  'specify both --width and --height, or --x2 '
                                  'and --y2 arguments.')
-parser.add_argument('object', metavar='image|color',
+parser.add_argument('source', metavar='image|color',
                     help='the image or color to draw. Use the --fill option '
                     'to fill with a color, but if --fill is not used then '
                     'this argument must be an image file. The color must be '
@@ -159,15 +159,15 @@ if args.overflow and args.push:
 
 # Open the image
 try:
-    img = Image.open(args.object)
+    img = Image.open(args.source)
 except FileNotFoundError:
-    print(f'Error: {args.object} not found')
+    print(f'Error: {args.source} not found')
     sys.exit(1)
 
 # Convert the image to RGBA
 img = img.convert('RGBA')
 
-# Size of the object
+# Size of the source
 width, height = img.size
 if width < 1 or height < 1:
     print('Error: the draw area must have at least 1 pixel')
@@ -220,7 +220,7 @@ if platform.system() == 'Windows':
     redirection = ' > NUL'
 
 drawn = 0
-# Draw the object
+# Draw the source
 for y in range(height):
     # Contrary to C/C++, it doesn't matter if you change the value of the loop
     # variable because on the next iteration it will be assigned the next
