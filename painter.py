@@ -106,17 +106,17 @@ if platform.system() == 'Windows':
 
 drawn = 0
 # Draw the image
-for x in range(width):
+for y in range(height):
     # Contrary to C/C++, it doesn't matter if you change the value of the loop
     # variable because on the next iteration it will be assigned the next
     # element from the list.
     if args.reverse:
-        x = width - x - 1
-    newx = args.x + x
-    for y in range(height):
+        y = height - y - 1
+    newy = args.y + y
+    for x in range(width):
         if args.reverse:
-            y = height - y - 1
-        newy = args.y + y
+            x = width - x - 1
+        newx = args.x + x
         r, g, b, a = img.getpixel((x, y))
         address = f'{args.base_ip}{newx:04x}:{newy:04x}:' \
                   f'{r:02x}{g:02x}:{b:02x}{a:02x}'
