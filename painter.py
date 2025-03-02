@@ -236,8 +236,8 @@ if args.x >= max or args.y >= max:
     sys.exit(1)
 if args.x2 != -1 or args.y2 != -1:
     if args.width != -1 or args.height != -1:
-        print('Error: -w and -h arguments are not allowed with --x2 and --y2 '
-              'arguments')
+        print('Error: the --width and --height arguments are not allowed with '
+              '--x2 and --y2 arguments')
         sys.exit(1)
     if args.x2 != -1:
         if args.x2 < 0:
