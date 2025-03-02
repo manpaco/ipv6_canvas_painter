@@ -11,12 +11,23 @@ from PIL import Image
 # Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
 # canvas.openbased.com
 base_ip = '2602:f75c:c0::'
+magic_number = 8
 max = 65535
+max_size = max / magic_number
 version = '0.1.0'
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Draw an image by sending ICMP '
-                                 'packets (AKA pings) to an IPv6 address')
+                                 'packets (AKA pings) to an IPv6 address',
+                                 epilog='When using --width and --height, or '
+                                 '--x2 and --y2 arguments you can specify one '
+                                 'of them and leave the script to calculate '
+                                 'the other one using the image aspect ratio. '
+                                 'If you specify both, the image will be '
+                                 'resized without keeping the aspect ratio. '
+                                 'If you specify -1 as value for '
+                                 'any of them, the script will not take it '
+                                 'into account (as if it was not specified). ')
 parser.add_argument('image', help='the image to draw')
 parser.add_argument('-x', type=int, default=0,
                     help='the x coordinate of the canvas to start drawing at. '
@@ -24,6 +35,16 @@ parser.add_argument('-x', type=int, default=0,
 parser.add_argument('-y', type=int, default=0,
                     help='the y coordinate of the canvas to start drawing at. '
                     'default: 0 (int)')
+parser.add_argument('--x2', type=int, default=-1,
+                    help='the x coordinate of the canvas to stop drawing at. '
+                    'default: -1 (int)')
+parser.add_argument('--y2', type=int, default=-1,
+                    help='the y coordinate of the canvas to stop drawing at. '
+                    'default: -1 (int)')
+parser.add_argument('--width', type=int, default=-1,
+                    help='the width of the image to draw. default: -1 (int)')
+parser.add_argument('--height', type=int, default=-1,
+                    help='the height of the image to draw. default: -1 (int)')
 parser.add_argument('-c', '--coordinates', default=None,
                     help='read canvas coordinates from a file. '
                     'content_format: X,Y', metavar='FILE')
@@ -67,6 +88,46 @@ if args.coordinates:
 if args.x < 0 or args.y < 0:
     print('Error: x and y must be greater than or equal to 0')
     sys.exit(1)
+print(f'Canvas coordinates: {args.x},{args.y}')
+if args.x2 != -1 or args.y2 != -1:
+    if args.width != -1 or args.height != -1:
+        print('Error: -w and -h arguments are not allowed with --x2 and --y2 '
+              'arguments')
+        sys.exit(1)
+    if args.x2 != -1:
+        if args.x2 < 0:
+            print('Error: x2 must be greater than or equal to 0')
+            sys.exit(1)
+        if args.x2 < args.x:
+            print('Error: x2 must be greater than or equal to x')
+            sys.exit(1)
+        args.width = args.x2 - args.x + 1
+    if args.y2 != -1:
+        if args.y2 < 0:
+            print('Error: y2 must be greater than or equal to 0')
+            sys.exit(1)
+        if args.y2 < args.y:
+            print('Error: y2 must be greater than or equal to y')
+            sys.exit(1)
+        args.height = args.y2 - args.y + 1
+use_width_arg = False
+if args.width != -1:
+    if args.width < 1:
+        print('Error: width must be greater than or equal to 1')
+        sys.exit(1)
+    if args.width > max_size:
+        print(f'Error: width must be less than or equal to {max_size}')
+        sys.exit(1)
+    use_width_arg = True
+use_height_arg = False
+if args.height != -1:
+    if args.height < 1:
+        print('Error: height must be greater than or equal to 1')
+        sys.exit(1)
+    if args.height > max_size:
+        print(f'Error: height must be less than or equal to {max_size}')
+        sys.exit(1)
+    use_height_arg = True
 
 # Open the image
 try:
@@ -83,6 +144,21 @@ width, height = img.size
 if width < 1 or height < 1:
     print('Error: the image must have at least 1 pixel')
     sys.exit(1)
+if use_width_arg and use_height_arg:
+    img = img.resize((args.width, args.height))
+    width, height = img.size
+elif use_width_arg and args.height != height:
+    aspect_ratio = width / height
+    args.height = round(args.width / aspect_ratio)
+    img = img.resize((args.width, args.height))
+    width, height = img.size
+elif use_height_arg and args.width != width:
+    aspect_ratio = height / width
+    args.width = round(args.height / aspect_ratio)
+    img = img.resize((args.width, args.height))
+    width, height = img.size
+print(f'Image size: {width}x{height}')
+
 pixels = width * height
 
 # Verify canvas boundaries
