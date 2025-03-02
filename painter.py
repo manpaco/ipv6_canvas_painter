@@ -99,7 +99,8 @@ class Bitmap(Element):
             print(f'Error: {source} not found')
             sys.exit(1)
         self.img = self.img.convert(bmp_mode)
-        # Initializing element size (do not use slef.set_size...)
+        # Initializing element size (do not use self.set_size... nor
+        # super().set_size...)
         self.width, self.height = self.img.size
         if self.width < 1 or self.height < 1:
             print('Error: the image must have at least 1 pixel')
