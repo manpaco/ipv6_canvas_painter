@@ -12,7 +12,7 @@ from PIL import Image
 # canvas.openbased.com
 base_ip = '2602:f75c:c0::'
 magic_number = 8
-max = 65535
+max = 65536
 max_size = max / magic_number
 version = '0.1.0'
 
@@ -162,14 +162,14 @@ print(f'Image size: {width}x{height}')
 pixels = width * height
 
 # Verify canvas boundaries
-exceeds_x = args.x + width - 1 > max
-exceeds_y = args.y + height - 1 > max
+exceeds_x = args.x + width > max
+exceeds_y = args.y + height > max
 if exceeds_x or exceeds_y:
     print('Error: you are trying to draw outside the canvas')
     if exceeds_x:
-        print(f'Suggested x: {max - width + 1}')
+        print(f'Suggested x: {max - width}')
     if exceeds_y:
-        print(f'Suggested y: {max - height + 1}')
+        print(f'Suggested y: {max - height}')
     sys.exit(1)
 
 # Ping command
