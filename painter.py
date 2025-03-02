@@ -35,6 +35,8 @@ parser.add_argument('-b', '--base-ip', default=base_ip,
                     f'default: {base_ip} (str)')
 parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the image in reverse order')
+parser.add_argument('-s', '--skip-transparent', action='store_true',
+                    help='skip transparent pixels')
 parser.add_argument('--dry-run', action='store_true',
                     help='run but not draw in the canvas, do not send '
                     'ICMP packets')
@@ -118,6 +120,8 @@ for y in range(height):
             x = width - x - 1
         newx = args.x + x
         r, g, b, a = img.getpixel((x, y))
+        if args.skip_transparent and a == 0:
+            continue
         address = f'{args.base_ip}{newx:04x}:{newy:04x}:' \
                   f'{r:02x}{g:02x}:{b:02x}{a:02x}'
         command = f'{ping} {address}{redirection}'
