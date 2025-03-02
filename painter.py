@@ -22,19 +22,24 @@ color_regex = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
 bmp_mode = 'RGBA'
 
 
-# Element class to store
+# Element class to store: source, width, and height
 class Element:
     def __init__(self, source):
         self.source = source
         self.width = 0
         self.height = 0
 
+    # To override
     def get_pixel(self, x, y):
         pass
 
     def get_size(self):
         return self.width, self.height
 
+    # Set element size:
+    # if width and height are != 1 --> use both values without using aspect
+    # if one of them is == -1 --> use aspect ratio to calculate to other one
+    # Before run verifications
     def set_size(self, width, height):
         use_width = False
         use_height = False
@@ -75,6 +80,7 @@ class Element:
     def pixels(self):
         return self.width * self.height
 
+    # To override
     def close(self):
         pass
 
@@ -82,6 +88,7 @@ class Element:
         return f'{self.source} ({self.width}x{self.height})'
 
 
+# Bitmap class to store: image
 class Bitmap(Element):
     def __init__(self, source):
         super().__init__(source)
@@ -91,6 +98,7 @@ class Bitmap(Element):
             print(f'Error: {source} not found')
             sys.exit(1)
         self.img = self.img.convert(bmp_mode)
+        # Initializing element size (do not use slef.set_size...)
         self.width, self.height = self.img.size
         if self.width < 1 or self.height < 1:
             print('Error: the image must have at least 1 pixel')
@@ -99,6 +107,8 @@ class Bitmap(Element):
     def get_pixel(self, x, y):
         return self.img.getpixel((x, y))
 
+    # Set bitmap size using the parent method and then resize the actual image
+    # with the calculated values
     def set_size(self, width, height):
         super().set_size(width, height)
         self.img = self.img.resize((self.width, self.height))
@@ -110,6 +120,7 @@ class Bitmap(Element):
         self.close()
 
 
+# Filling class to store: filling color
 class Filling(Element):
     def __init__(self, source):
         super().__init__(source)
@@ -118,6 +129,7 @@ class Filling(Element):
             sys.exit(1)
         self.set_color(source)
 
+    # If the filling has no alpha channel then return an extra value
     def get_pixel(self, x, y):
         if len(self.color) < 4:
             return self.color[0], self.color[1], self.color[2], 0
