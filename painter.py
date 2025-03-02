@@ -15,7 +15,7 @@ from PIL import ImageColor
 BASE_IP = '2602:f75c:c0::'
 MAGIC_NUMBER = 8
 MAX = 0x10000
-MAX_SIZE = round(max / MAGIC_NUMBER)
+MAX_SIZE = round(MAX / MAGIC_NUMBER)
 MAX_COLOR = 0xFF
 VERSION = '0.1.0'
 # RRGGBBAA regex with optional alpha channel
@@ -233,8 +233,8 @@ if args.coordinates:
 if args.x < 0 or args.y < 0:
     print('Error: x and y must be greater than or equal to 0')
     sys.exit(1)
-if args.x >= max or args.y >= max:
-    print(f'Error: x and y must be less than {max}')
+if args.x >= MAX or args.y >= MAX:
+    print(f'Error: x and y must be less than {MAX}')
     sys.exit(1)
 if args.x2 != -1 or args.y2 != -1:
     if args.width != -1 or args.height != -1:
@@ -248,8 +248,8 @@ if args.x2 != -1 or args.y2 != -1:
         if args.x2 < args.x:
             print('Error: x2 must be greater than or equal to x')
             sys.exit(1)
-        if args.x2 >= max:
-            print(f'Error: x2 must be less than {max}')
+        if args.x2 >= MAX:
+            print(f'Error: x2 must be less than {MAX}')
             sys.exit(1)
         args.width = args.x2 - args.x + 1
     if args.y2 != -1:
@@ -259,8 +259,8 @@ if args.x2 != -1 or args.y2 != -1:
         if args.y2 < args.y:
             print('Error: y2 must be greater than or equal to y')
             sys.exit(1)
-        if args.y2 >= max:
-            print(f'Error: y2 must be less than {max}')
+        if args.y2 >= MAX:
+            print(f'Error: y2 must be less than {MAX}')
             sys.exit(1)
         args.height = args.y2 - args.y + 1
 if args.fill and (args.width == -1 or args.height == -1):
@@ -287,8 +287,8 @@ source.set_size(args.width, args.height)
 width, height = source.get_size()
 
 # Verify canvas boundaries
-exceeds_x = args.x + width > max
-exceeds_y = args.y + height > max
+exceeds_x = args.x + width > MAX
+exceeds_y = args.y + height > MAX
 if exceeds_x or exceeds_y:
     if not args.overflow and not args.push:
         print('Error: you are trying to draw outside the canvas')
@@ -296,14 +296,14 @@ if exceeds_x or exceeds_y:
         sys.exit(1)
     if args.overflow:
         if exceeds_x:
-            width = max - args.x
+            width = MAX - args.x
         if exceeds_y:
-            height = max - args.y
+            height = MAX - args.y
     if args.push:
         if exceeds_x:
-            args.x = max - width
+            args.x = MAX - width
         if exceeds_y:
-            args.y = max - height
+            args.y = MAX - height
 
 # Show information about the area
 print(f'Coordinates: {args.x},{args.y}')
