@@ -275,6 +275,7 @@ if args.overflow and args.push:
 # Create the source
 if args.fill:
     source = Filling(args.source, args.width, args.height)
+    print(source)
 else:
     source = Bitmap(args.source)
     width, height = source.get_size()
@@ -282,9 +283,10 @@ else:
         print('Error: image size must be less than or equal to '
               f'{MAX_SIZE}x{MAX_SIZE}')
         sys.exit(1)
+    print(source)
+    source.set_size(args.width, args.height)
 
-# Set the size of the source
-source.set_size(args.width, args.height)
+# Save the size of the source
 width, height = source.get_size()
 
 # Verify canvas boundaries
@@ -308,7 +310,6 @@ if exceeds_x or exceeds_y:
 
 # Show information about the area
 print(f'Coordinates: {args.x},{args.y}')
-print(source)
 pixels = width * height
 more = ''
 if exceeds_x or exceeds_y:
