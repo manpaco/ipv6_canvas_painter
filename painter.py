@@ -149,6 +149,14 @@ class Filling(Element):
         return 'Filling: #' + super().__str__()
 
 
+def exceeds_values(x, y, width, height):
+    return x < 0, y < 0, x + width > MAX, y + height > MAX
+
+
+def exceeds(x, y, width, height):
+    return x < 0 or y < 0 or x + width > MAX or y + height > MAX
+
+
 # Parse arguments
 parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'ICMP packets (AKA pings) to an IPv6 address',
@@ -163,9 +171,10 @@ parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'into account (as if it was not specified). '
                                  'When using the --fill option, you should '
                                  'specify both --width and --height, or --x2 '
-                                 'and --y2 arguments.')
+                                 'and --y2 arguments (see --cx and --cy for '
+                                 'special case)')
 parser.add_argument('source', metavar='image|color',
-                    help='the image or color to draw. Use the --fill option '
+                    help='the image or filling to draw. Use the --fill option '
                     'to fill with a color, but if --fill is not used then '
                     'this argument must be an image file. The color must be '
                     'in hexadecimal format, alpha channel is optional. '
@@ -176,6 +185,16 @@ parser.add_argument('-x', type=int, default=0,
 parser.add_argument('-y', type=int, default=0,
                     help='the y coordinate of the canvas to start drawing at. '
                     'default: 0 (int)')
+parser.add_argument('--cx', type=int, default=1,
+                    help='the x coordinate of the canvas to place the center '
+                    'of the image, or filling area. Do not use together with '
+                    'the --x2 and --y2 arguments. Overrides -x and -y '
+                    'arguments')
+parser.add_argument('--cy', type=int, default=1,
+                    help='the y coordinate of the canvas to place the center '
+                    'of the image, or filling area. Do not use together with '
+                    'the --x2 and --y2 arguments. Overrides -x and -y '
+                    'arguments')
 parser.add_argument('--x2', type=int, default=-1,
                     help='the x coordinate of the canvas to stop drawing at. '
                     'default: -1 (int)')
@@ -223,7 +242,8 @@ if args.delay < 0:
     sys.exit(1)
 if args.coordinates:
     if args.x != 0 or args.y != 0:
-        print('Error: -x and -y arguments are not allowed with -c argument')
+        print('Error: the -x and -y arguments are not allowed with -c '
+              'argument')
         sys.exit(1)
     try:
         with open(args.coordinates) as f:
@@ -269,11 +289,30 @@ if args.x2 != -1 or args.y2 != -1:
             sys.exit(1)
         args.height = args.y2 - args.y + 1
 if args.fill and (args.width == -1 or args.height == -1):
-    print('Error: --fill option requires --width and --height arguments, or '
-          '--x2 and --y2 arguments')
+    print('Error: the --fill option requires --width and --height, or '
+          '--x2 and --y2 arguments (see --cx and --cy for special case)')
     sys.exit(1)
+if args.cx != -1 or args.cy != -1:
+    if args.x2 != -1 or args.y2 != -1:
+        print('Error: the --cx and --cy arguments can not be used together '
+              'with --x2 and --y2 arguments')
+        sys.exit(1)
+    if args.cx != -1:
+        if args.cx < 0:
+            print('Error: cx must be greater than or equal to 0')
+            sys.exit(1)
+        if args.cx >= MAX:
+            print(f'Error: cx must be less than {MAX}')
+            sys.exit(1)
+    if args.cy != -1:
+        if args.cy < 0:
+            print('Error: cy must be greater than or equal to 0')
+            sys.exit(1)
+        if args.cy >= MAX:
+            print(f'Error: cy must be less than {MAX}')
+            sys.exit(1)
 if args.overflow and args.push:
-    print('Error: --overflow and --push arguments are mutually exclusive')
+    print('Error: the --overflow and --push arguments are mutually exclusive')
     sys.exit(1)
 
 # Create the source
@@ -288,35 +327,63 @@ else:
 # Save the size of the source
 width, height = source.get_size()
 
+# Check the center
+if args.cx != -1:
+    args.x = args.cx - round(width / 2)
+if args.cy != -1:
+    args.y = args.cy - round(height / 2)
+
 # Verify canvas boundaries
-exceeds_x = args.x + width > MAX
-exceeds_y = args.y + height > MAX
-if exceeds_x or exceeds_y:
+exceeds_x, exceeds_y, exceeds_x2, exceeds_y2 = exceeds_values(args.x, args.y,
+                                                              width, height)
+exceeds_var = exceeds_x or exceeds_y or exceeds_x2 or exceeds_y2
+start_x = 0
+start_y = 0
+stop_width = width
+stop_height = height
+if exceeds_var:
     if not args.overflow and not args.push:
         print('Error: you are trying to draw outside the canvas')
         print('Use --overflow or --push to allow drawing')
         sys.exit(1)
     if args.overflow:
         if exceeds_x:
-            width = MAX - args.x
+            start_x -= args.x
         if exceeds_y:
-            height = MAX - args.y
+            start_y -= args.y
+        if exceeds_x2:
+            stop_width = MAX - args.x
+        if exceeds_y2:
+            stop_height = MAX - args.y
     if args.push:
         if exceeds_x:
-            args.x = MAX - width
+            args.x = 0
         if exceeds_y:
-            args.y = MAX - height
+            args.y = 0
+        if exceeds_x2:
+            args.x = MAX - stop_width
+        if exceeds_y2:
+            args.y = MAX - stop_height
+        if (exceeds(args.x, args.y, stop_width, stop_height)):
+            print('Error: the area continues to exceed the limit values after '
+                  'pushing it into the canvas\n'
+                  'Check that the constants of the program are correct')
+            sys.exit(1)
 
 # Show information about the area
-print(f'Coordinates: {args.x},{args.y}')
-pixels = width * height
+virt_width = stop_width - start_x
+virt_height = stop_height - start_y
+virt_x = args.x + start_x
+virt_y = args.y + start_y
+print(f'Coordinates: {virt_x},{virt_y}')
+pixels = (virt_width) * (virt_height)
 more = ''
-if exceeds_x or exceeds_y:
+if exceeds_var:
     if args.overflow:
         more = ' (overflow)'
     if args.push:
         more = ' (push)'
-print(f'Area size: {width}x{height} with {pixels} pixels{more}')
+print(f'Area size: {virt_width}x{virt_height} with {pixels} pixels{more}')
 
 # Ping command
 ping = 'ping -6 -c 1'
@@ -328,18 +395,20 @@ redirection = ' > /dev/null'
 if platform.system() == 'Windows':
     redirection = ' > NUL'
 
+# Reverse ranges if needed
+range_x = range(start_x, stop_width)
+range_y = range(start_y, stop_height)
+if args.reverse:
+    range_x = reversed(range_x)
+    range_y = reversed(range_y)
 drawn = 0
 # Draw the source
-for y in range(height):
+for y in range_y:
     # Contrary to C/C++, it doesn't matter if you change the value of the loop
     # variable because on the next iteration it will be assigned the next
     # element from the list.
-    if args.reverse:
-        y = height - y - 1
     newy = args.y + y
-    for x in range(width):
-        if args.reverse:
-            x = width - x - 1
+    for x in range_x:
         newx = args.x + x
         r, g, b, a = source.get_pixel(x, y)
         if args.skip_transparent and a == 0:
