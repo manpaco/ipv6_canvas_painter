@@ -123,12 +123,13 @@ class Bitmap(Element):
 
 # Filling class to store: filling color
 class Filling(Element):
-    def __init__(self, source):
+    def __init__(self, source, width, height):
         super().__init__(source)
         if not re.match(COLOR_REGEX, source):
             print('Error: invalid color format')
             sys.exit(1)
         self.set_color(source)
+        self.set_size(width, height)
 
     # If the filling has no alpha channel then return an extra value
     def get_pixel(self, x, y):
@@ -273,7 +274,7 @@ if args.overflow and args.push:
 
 # Create the source
 if args.fill:
-    source = Filling(args.source)
+    source = Filling(args.source, args.width, args.height)
 else:
     source = Bitmap(args.source)
     width, height = source.get_size()
