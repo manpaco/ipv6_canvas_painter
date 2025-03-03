@@ -47,18 +47,18 @@ class Element:
         has_zeros = self.width == 0 or self.height == 0
         if width != -1:
             if width < 1:
-                print('Error: width must be greater than or equal to 1')
+                print('Error: WIDTH must be greater than or equal to 1')
                 sys.exit(1)
             if width > MAX_SIZE:
-                print(f'Error: width must be less than or equal to {MAX_SIZE}')
+                print(f'Error: WIDTH must be less than or equal to {MAX_SIZE}')
                 sys.exit(1)
             use_width = True
         if height != -1:
             if height < 1:
-                print('Error: height must be greater than or equal to 1')
+                print('Error: HEIGHT must be greater than or equal to 1')
                 sys.exit(1)
             if height > MAX_SIZE:
-                print('Error: height must be less than or equal '
+                print('Error: HEIGHT must be less than or equal '
                       f'to {MAX_SIZE}')
                 sys.exit(1)
             use_height = True
@@ -152,55 +152,54 @@ def exceeds(x, y, width, height):
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
-                                 'ICMP packets (AKA pings) to an IPv6 address',
-                                 epilog='When using --width and --height, or '
-                                 '--x2 and --y2 arguments you can specify one '
+                                 'ICMP packets (AKA pings) to an IPv6 '
+                                 'address.',
+                                 epilog='IMPORTANT: '
+                                 'When using --width and --height, or '
+                                 '--x2 and --y2 options you can specify one '
                                  'of them and leave the script to calculate '
                                  'the other one using the image aspect ratio. '
                                  'If you specify both, the image will be '
                                  'resized without keeping the aspect ratio. '
-                                 'If you specify -1 as value for '
-                                 'any of them, the script will not take it '
-                                 'into account (as if it was not specified). '
-                                 'When using the --fill option, you should '
-                                 'specify both --width and --height, or --x2 '
-                                 'and --y2 arguments (see --cx and --cy for '
-                                 'special case)')
+                                 'If you specify -1 as value for any of them '
+                                 'the script will not take it into account, '
+                                 'as if you hadn\'t specified it.'
+                                 )
 parser.add_argument('source', metavar='image|color',
                     help='the image or filling to draw. Use the --fill option '
-                    'to fill with a color, but if --fill is not used then '
-                    'this argument must be an image file. The color must be '
-                    'in hexadecimal format, alpha channel is optional. '
+                    'to fill with a color, but if it\'s not used then this '
+                    'argument must be an image file. The color must be in '
+                    'hexadecimal format; alpha channel is optional. '
                     'color_format: RRGGBB[AA] (str)')
 parser.add_argument('-x', type=int, default=0,
                     help='the x coordinate of the canvas to start drawing at. '
                     'default: 0 (int)')
 parser.add_argument('-y', type=int, default=0,
-                    help='the y coordinate of the canvas to start drawing at. '
+                    help='similat to -x. '
                     'default: 0 (int)')
-parser.add_argument('--cx', type=int, default=1,
+parser.add_argument('--cx', type=int, default=-1,
                     help='the x coordinate of the canvas to place the center '
-                    'of the image, or filling area. Do not use together with '
-                    'the --x2 and --y2 arguments. Overrides -x and -y '
-                    'arguments')
-parser.add_argument('--cy', type=int, default=1,
-                    help='the y coordinate of the canvas to place the center '
-                    'of the image, or filling area. Do not use together with '
-                    'the --x2 and --y2 arguments. Overrides -x and -y '
-                    'arguments')
+                    'of the image, or filling area. Overrrides -x option. '
+                    'You can\'t use it together with --x2 and --y2 options.'
+                    ' default: -1 (int)')
+parser.add_argument('--cy', type=int, default=-1,
+                    help='similar to --cx.'
+                    ' default: -1 (int)')
 parser.add_argument('--x2', type=int, default=-1,
                     help='the x coordinate of the canvas to stop drawing at. '
                     'default: -1 (int)')
 parser.add_argument('--y2', type=int, default=-1,
-                    help='the y coordinate of the canvas to stop drawing at. '
+                    help='similar to --x2. '
                     'default: -1 (int)')
 parser.add_argument('--width', type=int, default=-1,
                     help='the width of the area to draw. default: -1 (int)')
 parser.add_argument('--height', type=int, default=-1,
-                    help='the height of the area to draw. default: -1 (int)')
+                    help='similar to --width. '
+                    'default: -1 (int)')
 parser.add_argument('-f', '--fill', action='store_true',
                     help='use the specified color to fill the area, instead '
-                    'of drawing an image')
+                    'of drawing an image. You must specify both --width and '
+                    '--height, or --x2 and --y2 options')
 parser.add_argument('-c', '--coordinates', default=None,
                     help='read canvas coordinates from a file. '
                     'content_format: X,Y', metavar='FILE')
@@ -215,14 +214,14 @@ parser.add_argument('-r', '--reverse', action='store_true',
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip completely transparent pixels')
 parser.add_argument('--push', action='store_true',
-                    help='allow drawing despite exceeding the canvas, '
-                    'the draw area will be pushed to the left and/or top')
+                    help='the draw area will be pushed into the canvas if it '
+                    'exceeds the boundaries')
 parser.add_argument('--overflow', action='store_true',
-                    help='allow drawing despite exceeding the canvas, '
-                    'the draw area will be cropped')
+                    help='the draw area will be cropped if it exceds the '
+                    'boundaries')
 parser.add_argument('--dry-run', action='store_true',
-                    help='run but not draw in the canvas, do not send '
-                    'ICMP packets. Useful to test commands')
+                    help='run but don\'t send ICMP packets. '
+                    'Useful to test commands')
 parser.add_argument('--verbose', action='store_true',
                     help='print the ping command before executing')
 parser.add_argument('--version', action='version',
@@ -231,12 +230,11 @@ args = parser.parse_args()
 
 # Verify arguments
 if args.delay < 0:
-    print('Error: delay must be greater than or equal to 0')
+    print('Error: DELAY must be greater than or equal to 0')
     sys.exit(1)
 if args.coordinates:
     if args.x != 0 or args.y != 0:
-        print('Error: the -x and -y arguments are not allowed with -c '
-              'argument')
+        print('Error: the -x and -y options are not allowed with -c option')
         sys.exit(1)
     try:
         with open(args.coordinates) as f:
@@ -249,63 +247,63 @@ if args.coordinates:
               'by a comma.\nExample: 123,456')
         sys.exit(1)
 if args.x < 0 or args.y < 0:
-    print('Error: x and y must be greater than or equal to 0')
+    print('Error: X and Y must be greater than or equal to 0')
     sys.exit(1)
 if args.x >= MAX or args.y >= MAX:
-    print(f'Error: x and y must be less than {MAX}')
+    print(f'Error: X and Y must be less than {MAX}')
     sys.exit(1)
 if args.x2 != -1 or args.y2 != -1:
     if args.width != -1 or args.height != -1:
-        print('Error: the --width and --height arguments are not allowed with '
-              '--x2 and --y2 arguments')
+        print('Error: the --width and --height options are not allowed with '
+              '--x2 and --y2 options')
         sys.exit(1)
     if args.x2 != -1:
         if args.x2 < 0:
-            print('Error: x2 must be greater than or equal to 0')
+            print('Error: X2 must be greater than or equal to 0')
             sys.exit(1)
         if args.x2 < args.x:
-            print('Error: x2 must be greater than or equal to x')
+            print('Error: X2 must be greater than or equal to x')
             sys.exit(1)
         if args.x2 >= MAX:
-            print(f'Error: x2 must be less than {MAX}')
+            print(f'Error: X2 must be less than {MAX}')
             sys.exit(1)
         args.width = args.x2 - args.x + 1
     if args.y2 != -1:
         if args.y2 < 0:
-            print('Error: y2 must be greater than or equal to 0')
+            print('Error: Y2 must be greater than or equal to 0')
             sys.exit(1)
         if args.y2 < args.y:
-            print('Error: y2 must be greater than or equal to y')
+            print('Error: Y2 must be greater than or equal to y')
             sys.exit(1)
         if args.y2 >= MAX:
-            print(f'Error: y2 must be less than {MAX}')
+            print(f'Error: Y2 must be less than {MAX}')
             sys.exit(1)
         args.height = args.y2 - args.y + 1
 if args.fill and (args.width == -1 or args.height == -1):
     print('Error: the --fill option requires --width and --height, or '
-          '--x2 and --y2 arguments (see --cx and --cy for special case)')
+          '--x2 and --y2 options')
     sys.exit(1)
 if args.cx != -1 or args.cy != -1:
     if args.x2 != -1 or args.y2 != -1:
-        print('Error: the --cx and --cy arguments can not be used together '
-              'with --x2 and --y2 arguments')
+        print('Error: the --cx and --cy options can not be used together '
+              'with --x2 and --y2 options')
         sys.exit(1)
     if args.cx != -1:
         if args.cx < 0:
-            print('Error: cx must be greater than or equal to 0')
+            print('Error: CX must be greater than or equal to 0')
             sys.exit(1)
         if args.cx >= MAX:
-            print(f'Error: cx must be less than {MAX}')
+            print(f'Error: CX must be less than {MAX}')
             sys.exit(1)
     if args.cy != -1:
         if args.cy < 0:
-            print('Error: cy must be greater than or equal to 0')
+            print('Error: CY must be greater than or equal to 0')
             sys.exit(1)
         if args.cy >= MAX:
-            print(f'Error: cy must be less than {MAX}')
+            print(f'Error: CY must be less than {MAX}')
             sys.exit(1)
 if args.overflow and args.push:
-    print('Error: the --overflow and --push arguments are mutually exclusive')
+    print('Error: the --overflow and --push options are mutually exclusive')
     sys.exit(1)
 
 # Create the source
