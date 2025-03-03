@@ -309,7 +309,13 @@ if exceeds_x or exceeds_y:
 print(f'Coordinates: {args.x},{args.y}')
 print(source)
 pixels = width * height
-print(f'Area size: {width}x{height} with {pixels} pixels')
+more = ''
+if exceeds_x or exceeds_y:
+    if args.overflow:
+        more = ' (overflow)'
+    if args.push:
+        more = ' (push)'
+print(f'Area size: {width}x{height} with {pixels} pixels{more}')
 
 # Ping command
 ping = 'ping -6 -c 1'
