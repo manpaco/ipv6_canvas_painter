@@ -8,6 +8,8 @@ BASE_URI="https://canvas.openbased.org/"
 for link in *; do
     if [[ -h "$link" ]]; then
         file="$(readlink -f "$link")"
-        echo "${BASE_URI}#1.00,$(cat "${file}.xy") --> $file"
+        pos="$(cat "${file}.xy")"
+        pos="$(sed -E 's/(,[a-zA-Z]{1})$//' <<<"$pos")"
+        echo "${BASE_URI}#1.00,$pos --> $file"
     fi
 done
