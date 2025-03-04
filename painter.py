@@ -47,14 +47,16 @@ class Element:
         return self.width, self.height
 
     # Set element size:
-    # if width and height are != -1 --> use both values without using aspect
-    # if ONE of them is != -1 --> use aspect ratio to calculate to other one
+    # - If width and height are != UNDEFINED --> use both values without using
+    # aspect ratio
+    # - If ONE of them is != UNDEFINED --> use aspect ratio to calculate the
+    # other one
     # Before run verifications
     def set_size(self, width, height):
         use_width = False
         use_height = False
         has_zeros = self.width == 0 or self.height == 0
-        if width != -1:
+        if width != UNDEFINED:
             if width < 1:
                 print('Error: WIDTH must be greater than or equal to 1')
                 sys.exit(1)
@@ -62,7 +64,7 @@ class Element:
                 print(f'Error: WIDTH must be less than or equal to {MAX_SIZE}')
                 sys.exit(1)
             use_width = True
-        if height != -1:
+        if height != UNDEFINED:
             if height < 1:
                 print('Error: HEIGHT must be greater than or equal to 1')
                 sys.exit(1)
@@ -170,9 +172,10 @@ parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'the other one using the image aspect ratio. '
                                  'If you specify both, the image will be '
                                  'resized without keeping the aspect ratio. '
-                                 'If you specify -1 as value for any of them '
-                                 'the script will not take it into account, '
-                                 'as if you hadn\'t specified it.'
+                                 f'If you specify {UNDEFINED} as value for '
+                                 'any of them the script will not take it '
+                                 'into account, as if you hadn\'t specified '
+                                 'it.'
                                  )
 parser.add_argument('source', metavar='image|color',
                     help='the image or filling to draw. Use the --fill option '
@@ -186,25 +189,26 @@ parser.add_argument('-x', type=int, default=0,
 parser.add_argument('-y', type=int, default=0,
                     help='similat to -x. '
                     'default: 0 (int)')
-parser.add_argument('--cx', type=int, default=-1,
+parser.add_argument('--cx', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to place the center '
                     'of the image, or filling area. Overrrides -x option. '
                     'You can\'t use it together with --x2 and --y2 options.'
-                    ' default: -1 (int)')
-parser.add_argument('--cy', type=int, default=-1,
+                    f' default: {UNDEFINED} (UNDEFINED)')
+parser.add_argument('--cy', type=int, default=UNDEFINED,
                     help='similar to --cx.'
-                    ' default: -1 (int)')
-parser.add_argument('--x2', type=int, default=-1,
+                    f' default: {UNDEFINED} (UNDEFINED)')
+parser.add_argument('--x2', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to stop drawing at. '
-                    'default: -1 (int)')
-parser.add_argument('--y2', type=int, default=-1,
+                    f'default: {UNDEFINED} (UNDEFINED)')
+parser.add_argument('--y2', type=int, default=UNDEFINED,
                     help='similar to --x2. '
-                    'default: -1 (int)')
-parser.add_argument('--width', type=int, default=-1,
-                    help='the width of the area to draw. default: -1 (int)')
-parser.add_argument('--height', type=int, default=-1,
+                    f'default: {UNDEFINED} (UNDEFINED)')
+parser.add_argument('--width', type=int, default=UNDEFINED,
+                    help='the width of the area to draw. '
+                    f'default: {UNDEFINED} (UNDEFINED)')
+parser.add_argument('--height', type=int, default=UNDEFINED,
                     help='similar to --width. '
-                    'default: -1 (int)')
+                    f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('-f', '--fill', action='store_true',
                     help='use the specified color to fill the area, instead '
                     'of drawing an image. You must specify both --width and '
@@ -261,12 +265,12 @@ if args.x < 0 or args.y < 0:
 if args.x >= MAX or args.y >= MAX:
     print(f'Error: X and Y must be less than {MAX}')
     sys.exit(1)
-if args.x2 != -1 or args.y2 != -1:
-    if args.width != -1 or args.height != -1:
+if args.x2 != UNDEFINED or args.y2 != UNDEFINED:
+    if args.width != UNDEFINED or args.height != UNDEFINED:
         print('Error: the --width and --height options are not allowed with '
               '--x2 and --y2 options')
         sys.exit(1)
-    if args.x2 != -1:
+    if args.x2 != UNDEFINED:
         if args.x2 < 0:
             print('Error: X2 must be greater than or equal to 0')
             sys.exit(1)
@@ -277,7 +281,7 @@ if args.x2 != -1 or args.y2 != -1:
             print(f'Error: X2 must be less than {MAX}')
             sys.exit(1)
         args.width = args.x2 - args.x + 1
-    if args.y2 != -1:
+    if args.y2 != UNDEFINED:
         if args.y2 < 0:
             print('Error: Y2 must be greater than or equal to 0')
             sys.exit(1)
@@ -288,23 +292,23 @@ if args.x2 != -1 or args.y2 != -1:
             print(f'Error: Y2 must be less than {MAX}')
             sys.exit(1)
         args.height = args.y2 - args.y + 1
-if args.fill and (args.width == -1 or args.height == -1):
+if args.fill and (args.width == UNDEFINED or args.height == UNDEFINED):
     print('Error: the --fill option requires --width and --height, or '
           '--x2 and --y2 options')
     sys.exit(1)
-if args.cx != -1 or args.cy != -1:
-    if args.x2 != -1 or args.y2 != -1:
+if args.cx != UNDEFINED or args.cy != UNDEFINED:
+    if args.x2 != UNDEFINED or args.y2 != UNDEFINED:
         print('Error: the --cx and --cy options can not be used together '
               'with --x2 and --y2 options')
         sys.exit(1)
-    if args.cx != -1:
+    if args.cx != UNDEFINED:
         if args.cx < 0:
             print('Error: CX must be greater than or equal to 0')
             sys.exit(1)
         if args.cx >= MAX:
             print(f'Error: CX must be less than {MAX}')
             sys.exit(1)
-    if args.cy != -1:
+    if args.cy != UNDEFINED:
         if args.cy < 0:
             print('Error: CY must be greater than or equal to 0')
             sys.exit(1)
@@ -336,9 +340,9 @@ else:
 width, height = source.get_size()
 
 # Check the center
-if args.cx != -1:
+if args.cx != UNDEFINED:
     args.x = args.cx - round(width / 2)
-if args.cy != -1:
+if args.cy != UNDEFINED:
     args.y = args.cy - round(height / 2)
 
 # Verify canvas boundaries
