@@ -173,11 +173,7 @@ parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'of them and leave the script to calculate '
                                  'the other one using the image aspect ratio. '
                                  'If you specify both, the image will be '
-                                 'resized without keeping the aspect ratio. '
-                                 f'If you specify {UNDEFINED} as value for '
-                                 'any of them the script will not take it '
-                                 'into account, as if you hadn\'t specified '
-                                 'it.'
+                                 'resized without keeping the aspect ratio.'
                                  )
 parser.add_argument('source', metavar='image|color',
                     help='the image or color to draw. Use the --fill option '
@@ -195,9 +191,7 @@ parser.add_argument('-y', type=int, default=UNDEFINED,
                     help='similat to -x. '
                     f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('--cx', type=int, default=UNDEFINED,
-                    help='the x coordinate of the canvas to place the center '
-                    'of the image, or filling area. Overrrides -x option. '
-                    'You can\'t use it together with --x2 and --y2 options.'
+                    help='the x coordinate of the canvas to place the center. '
                     f' default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('--cy', type=int, default=UNDEFINED,
                     help='similar to --cx.'
@@ -216,8 +210,7 @@ parser.add_argument('--height', type=int, default=UNDEFINED,
                     f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('-f', '--fill', action='store_true',
                     help='use the specified color to fill the area, instead '
-                    'of drawing an image. You must specify both --width and '
-                    '--height, or --x2 and --y2 options')
+                    'of drawing an image.')
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
@@ -229,10 +222,10 @@ parser.add_argument('-r', '--reverse', action='store_true',
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip completely transparent pixels')
 parser.add_argument('--overflow', action='store_true',
-                    help='the draw area will be cropped if it exceds the '
+                    help='the area will be cropped if it exceds the '
                     'boundaries')
 parser.add_argument('--push', action='store_true',
-                    help='the draw area will be pushed into the canvas if it '
+                    help='the area will be pushed into the canvas if it '
                     'exceeds the boundaries')
 parser.add_argument('--dry-run', action='store_true',
                     help='run but don\'t send ICMP packets. '
