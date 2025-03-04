@@ -208,15 +208,15 @@ parser.add_argument('--width', type=int, default=UNDEFINED,
 parser.add_argument('--height', type=int, default=UNDEFINED,
                     help='similar to --width. '
                     f'default: {UNDEFINED} (UNDEFINED)')
-parser.add_argument('-f', '--fill', action='store_true',
-                    help='use the specified color to fill the area, instead '
-                    'of drawing an image.')
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
 parser.add_argument('-b', '--base-ip', default=BASE_IP,
                     help=f'the first 64 bits of the IPv6 address to draw to. '
                     f'default: {BASE_IP} (str)')
+parser.add_argument('-f', '--fill', action='store_true',
+                    help='use the specified color to fill the area, instead '
+                    'of drawing an image.')
 parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the area in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
@@ -335,12 +335,12 @@ if args.y2 != UNDEFINED:
             print('Error: Y2 must be greater than or equal to X')
             sys.exit(1)
         args.height = args.y2 - args.y + 1
+if args.delay < 0:
+    print('Error: DELAY must be greater than or equal to 0')
+    sys.exit(1)
 if args.fill and (args.width == UNDEFINED or args.height == UNDEFINED):
     print('Error: the --fill option requires --width and --height, or '
           '--x2 and --y2 options')
-    sys.exit(1)
-if args.delay < 0:
-    print('Error: DELAY must be greater than or equal to 0')
     sys.exit(1)
 if args.overflow and args.push:
     print('Error: the --overflow and --push options are mutually exclusive')
