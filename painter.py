@@ -156,11 +156,11 @@ class Filling(Element):
 
 
 def exceeds_values(x, y, width, height):
-    return x < 0, y < 0, x + width > MAX, y + height > MAX
+    return x < ORIGIN, y < ORIGIN, x + width > MAX, y + height > MAX
 
 
 def exceeds(x, y, width, height):
-    return x < 0 or y < 0 or x + width > MAX or y + height > MAX
+    return x < ORIGIN or y < ORIGIN or x + width > MAX or y + height > MAX
 
 
 # Parse arguments
@@ -259,7 +259,7 @@ if args.x != UNDEFINED:
               '--cx option')
         sys.exit(1)
     if args.x < ORIGIN:
-        print('Error: X must be greater than or equal to 0')
+        print(f'Error: X must be greater than or equal to {ORIGIN}')
         sys.exit(1)
     if args.x >= MAX:
         print(f'Error: X must be less than {MAX}')
@@ -272,7 +272,7 @@ if args.y != UNDEFINED:
               '--cy option')
         sys.exit(1)
     if args.y < ORIGIN:
-        print('Error: Y must be greater than or equal to 0')
+        print(f'Error: Y must be greater than or equal to {ORIGIN}')
         sys.exit(1)
     if args.y >= MAX:
         print(f'Error: Y must be less than {MAX}')
@@ -281,14 +281,14 @@ else:
     args.y = ORIGIN
 if args.cx != UNDEFINED:
     if args.cx < ORIGIN:
-        print('Error: CX must be greater than or equal to 0')
+        print(f'Error: CX must be greater than or equal to {ORIGIN}')
         sys.exit(1)
     if args.cx >= MAX:
         print(f'Error: CX must be less than {MAX}')
         sys.exit(1)
 if args.cy != UNDEFINED:
     if args.cy < ORIGIN:
-        print('Error: CY must be greater than or equal to 0')
+        print(f'Error: CY must be greater than or equal to {ORIGIN}')
         sys.exit(1)
     if args.cy >= MAX:
         print(f'Error: CY must be less than {MAX}')
@@ -299,7 +299,7 @@ if args.x2 != UNDEFINED:
               '--width option')
         sys.exit(1)
     if args.x2 < ORIGIN:
-        print('Error: X2 must be greater than or equal to 0')
+        print(f'Error: X2 must be greater than or equal to {ORIGIN}')
         sys.exit(1)
     if args.x2 >= MAX:
         print(f'Error: X2 must be less than {MAX}')
@@ -319,8 +319,8 @@ if args.y2 != UNDEFINED:
         print('Error: the --y2 option can\'t be usued together with the '
               '--height option')
         sys.exit(1)
-    if args.y2 < 0:
-        print('Error: Y2 must be greater than or equal to 0')
+    if args.y2 < ORIGIN:
+        print(f'Error: Y2 must be greater than or equal to {ORIGIN}')
         sys.exit(1)
     if args.y2 >= MAX:
         print(f'Error: Y2 must be less than {MAX}')
@@ -376,8 +376,8 @@ if args.cy != UNDEFINED:
 exceeds_x, exceeds_y, exceeds_x2, exceeds_y2 = exceeds_values(args.x, args.y,
                                                               width, height)
 exceeds_var = exceeds_x or exceeds_y or exceeds_x2 or exceeds_y2
-start_x = 0
-start_y = 0
+start_x = ORIGIN
+start_y = ORIGIN
 stop_width = width
 stop_height = height
 if exceeds_var:
@@ -396,9 +396,9 @@ if exceeds_var:
             stop_height = MAX - args.y
     if args.push:
         if exceeds_x:
-            args.x = 0
+            args.x = ORIGIN
         if exceeds_y:
-            args.y = 0
+            args.y = ORIGIN
         if exceeds_x2:
             args.x = MAX - stop_width
         if exceeds_y2:
