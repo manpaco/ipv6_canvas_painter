@@ -185,12 +185,12 @@ parser.add_argument('source', metavar='image|color',
                     'argument must be an image file. The color must be in '
                     'hexadecimal format; alpha channel is optional. '
                     'color_format: RRGGBB[AA] (str)')
-parser.add_argument('-x', type=int, default=0,
+parser.add_argument('-x', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to start drawing at. '
-                    'default: 0 (int)')
-parser.add_argument('-y', type=int, default=0,
+                    f'default: {UNDEFINED} (UNDEFINED)')
+parser.add_argument('-y', type=int, default=UNDEFINED,
                     help='similat to -x. '
-                    'default: 0 (int)')
+                    f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('--cx', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to place the center '
                     'of the image, or filling area. Overrrides -x option. '
@@ -248,8 +248,10 @@ if args.delay < 0:
     print('Error: DELAY must be greater than or equal to 0')
     sys.exit(1)
 if args.coordinates:
-    if args.x != 0 or args.y != 0:
-        print('Error: the -x and -y options are not allowed with -c option')
+    if (args.x != UNDEFINED or args.y != UNDEFINED
+            or args.cx != UNDEFINED or args.cy != UNDEFINED):
+        print('Error: the --coordinates option can\'t be used together with '
+              '-x, -y, --cx, and --cy options')
         sys.exit(1)
     try:
         with open(args.coordinates) as f:
@@ -261,62 +263,92 @@ if args.coordinates:
         print(f'Error: {args.coordinates} must contain two integers separated '
               'by a comma.\nExample: 123,456')
         sys.exit(1)
-if args.x < 0 or args.y < 0:
-    print('Error: X and Y must be greater than or equal to 0')
-    sys.exit(1)
-if args.x >= MAX or args.y >= MAX:
-    print(f'Error: X and Y must be less than {MAX}')
-    sys.exit(1)
-if args.x2 != UNDEFINED or args.y2 != UNDEFINED:
-    if args.width != UNDEFINED or args.height != UNDEFINED:
-        print('Error: the --width and --height options are not allowed with '
-              '--x2 and --y2 options')
+if args.x != UNDEFINED:
+    if args.cx != UNDEFINED:
+        print('Error: the -x option can\'t be used together with the '
+              '--cx option')
         sys.exit(1)
-    if args.x2 != UNDEFINED:
-        if args.x2 < 0:
-            print('Error: X2 must be greater than or equal to 0')
+    if args.x < ORIGIN:
+        print('Error: X must be greater than or equal to 0')
+        sys.exit(1)
+    if args.x >= MAX:
+        print(f'Error: X must be less than {MAX}')
+        sys.exit(1)
+else:
+    args.x = ORIGIN
+if args.y != UNDEFINED:
+    if args.cy != UNDEFINED:
+        print('Error: the -y option can\'t be used together with the '
+              '--cy option')
+        sys.exit(1)
+    if args.y < ORIGIN:
+        print('Error: Y must be greater than or equal to 0')
+        sys.exit(1)
+    if args.y >= MAX:
+        print(f'Error: Y must be less than {MAX}')
+        sys.exit(1)
+else:
+    args.y = ORIGIN
+if args.cx != UNDEFINED:
+    if args.cx < ORIGIN:
+        print('Error: CX must be greater than or equal to 0')
+        sys.exit(1)
+    if args.cx >= MAX:
+        print(f'Error: CX must be less than {MAX}')
+        sys.exit(1)
+if args.cy != UNDEFINED:
+    if args.cy < ORIGIN:
+        print('Error: CY must be greater than or equal to 0')
+        sys.exit(1)
+    if args.cy >= MAX:
+        print(f'Error: CY must be less than {MAX}')
+        sys.exit(1)
+if args.x2 != UNDEFINED:
+    if args.width != UNDEFINED:
+        print('Error: the --x2 option can\'t be usued together with the '
+              '--width option')
+        sys.exit(1)
+    if args.x2 < ORIGIN:
+        print('Error: X2 must be greater than or equal to 0')
+        sys.exit(1)
+    if args.x2 >= MAX:
+        print(f'Error: X2 must be less than {MAX}')
+        sys.exit(1)
+    if args.cx != UNDEFINED:
+        if args.x2 < args.cx:
+            print('Error: X2 must be greater than or equal to CX')
             sys.exit(1)
+        args.width = ((args.x2 - args.cx) * 2) + 1
+    else:
         if args.x2 < args.x:
-            print('Error: X2 must be greater than or equal to x')
-            sys.exit(1)
-        if args.x2 >= MAX:
-            print(f'Error: X2 must be less than {MAX}')
+            print('Error: X2 must be greater than or equal to X')
             sys.exit(1)
         args.width = args.x2 - args.x + 1
-    if args.y2 != UNDEFINED:
-        if args.y2 < 0:
-            print('Error: Y2 must be greater than or equal to 0')
+if args.y2 != UNDEFINED:
+    if args.height != UNDEFINED:
+        print('Error: the --y2 option can\'t be usued together with the '
+              '--height option')
+        sys.exit(1)
+    if args.y2 < 0:
+        print('Error: Y2 must be greater than or equal to 0')
+        sys.exit(1)
+    if args.y2 >= MAX:
+        print(f'Error: Y2 must be less than {MAX}')
+        sys.exit(1)
+    if args.cy != UNDEFINED:
+        if args.y2 < args.cy:
+            print('Error: Y2 must be greater than or equal to CY')
             sys.exit(1)
+        args.height = ((args.y2 - args.cy) * 2) + 1
+    else:
         if args.y2 < args.y:
-            print('Error: Y2 must be greater than or equal to y')
-            sys.exit(1)
-        if args.y2 >= MAX:
-            print(f'Error: Y2 must be less than {MAX}')
+            print('Error: Y2 must be greater than or equal to X')
             sys.exit(1)
         args.height = args.y2 - args.y + 1
 if args.fill and (args.width == UNDEFINED or args.height == UNDEFINED):
     print('Error: the --fill option requires --width and --height, or '
           '--x2 and --y2 options')
     sys.exit(1)
-if args.cx != UNDEFINED or args.cy != UNDEFINED:
-    if args.x2 != UNDEFINED or args.y2 != UNDEFINED:
-        print('Error: the --cx and --cy options can not be used together '
-              'with --x2 and --y2 options')
-        sys.exit(1)
-    if args.cx != UNDEFINED:
-        if args.cx < 0:
-            print('Error: CX must be greater than or equal to 0')
-            sys.exit(1)
-        if args.cx >= MAX:
-            print(f'Error: CX must be less than {MAX}')
-            sys.exit(1)
-    if args.cy != UNDEFINED:
-        if args.cy < 0:
-            print('Error: CY must be greater than or equal to 0')
-            sys.exit(1)
-        if args.cy >= MAX:
-            print(f'Error: CY must be less than {MAX}')
-            sys.exit(1)
 if args.overflow and args.push:
     print('Error: the --overflow and --push options are mutually exclusive')
     sys.exit(1)
