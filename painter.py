@@ -25,9 +25,9 @@ ORIGIN = 0
 MAX = 0x10000
 MIN_SIZE = 1
 MAX_SIZE = round(MAX / MAGIC_NUMBER)
-ORIGIN_TYPE_REGEX = '^[oO]{1}$'
+DEFAULT_TYPE_REGEX = '^[dD]{1}$'
 CENTER_TYPE_REGEX = '^[cC]{1}$'
-ORIGIN_TYPE = 'O'
+DEFAULT_TYPE = 'D'
 CENTER_TYPE = 'C'
 NUMBER_REGEX = '^[0-9]+$'
 
@@ -192,8 +192,8 @@ parser.add_argument('source', metavar='image|color',
 parser.add_argument('-c', '--coordinates', default=None,
                     help='read canvas coordinates from a file: with X, Y, and '
                     'optional TYPE to indicate coordinates type. '
-                    f'TYPE values to use: {ORIGIN_TYPE} (origin, like -x and '
-                    f'-y) or {CENTER_TYPE} (center, like --cx and --cy). '
+                    f'TYPE values to use: {DEFAULT_TYPE} (default, like -x '
+                    f'and -y) or {CENTER_TYPE} (center, like --cx and --cy). '
                     'content_format: X,Y[,TYPE]', metavar='FILE')
 parser.add_argument('-x', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to start drawing at. '
@@ -281,8 +281,8 @@ if args.coordinates:
               'valid (verify that there are no spaces)')
         sys.exit(1)
     if tmp_type is None:
-        tmp_type = ORIGIN_TYPE
-    if re.match(ORIGIN_TYPE_REGEX, tmp_type):
+        tmp_type = DEFAULT_TYPE
+    if re.match(DEFAULT_TYPE_REGEX, tmp_type):
         args.x = int(tmp_x)
         args.y = int(tmp_y)
     elif re.match(CENTER_TYPE_REGEX, tmp_type):
@@ -411,12 +411,12 @@ if args.cx != UNDEFINED or args.cy != UNDEFINED:
         more_str += f' --> ({CENTER_TYPE},'
         tmp_x = args.cx
     else:
-        more_str += f' --> ({ORIGIN_TYPE},'
+        more_str += f' --> ({DEFAULT_TYPE},'
     if args.cy != UNDEFINED:
         more_str += f'{CENTER_TYPE})'
         tmp_y = args.cy
     else:
-        more_str += f'{ORIGIN_TYPE})'
+        more_str += f'{DEFAULT_TYPE})'
 more_str = f' in ({tmp_x},{tmp_y}){more_str}'
 
 # Create the source
