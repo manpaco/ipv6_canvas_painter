@@ -9,17 +9,26 @@ import platform
 from PIL import Image
 from PIL import ImageColor
 
+# Version
+VERSION = '0.1.0'
+
 # VPS IPv6 address (first 64 bits)
 # Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
 # canvas.openbased.com
 BASE_IP = '2602:f75c:c0::'
+
+# Canvas constants
 MAGIC_NUMBER = 8
+UNDEFINED = -1
+ORIGIN = 0
 MAX = 0x10000
+MIN_SIZE = 1
 MAX_SIZE = round(MAX / MAGIC_NUMBER)
-MAX_COLOR = 0xFF
-VERSION = '0.1.0'
+
+# Colors constants
 # RRGGBBAA regex with optional alpha channel
 COLOR_REGEX = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
+MAX_COLOR = 0xFF
 BMP_MODE = 'RGBA'
 
 
