@@ -180,7 +180,7 @@ parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'it.'
                                  )
 parser.add_argument('source', metavar='image|color',
-                    help='the image or filling to draw. Use the --fill option '
+                    help='the image or color to draw. Use the --fill option '
                     'to fill with a color, but if it\'s not used then this '
                     'argument must be an image file. The color must be in '
                     'hexadecimal format; alpha channel is optional. '
