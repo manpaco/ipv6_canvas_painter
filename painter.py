@@ -228,8 +228,8 @@ parser.add_argument('--push', action='store_true',
                     help='the area will be pushed into the canvas if it '
                     'exceeds the boundaries')
 parser.add_argument('--dry-run', action='store_true',
-                    help='run but don\'t send ICMP packets. '
-                    'Useful to test commands')
+                    help='run but don\'t send ICMP packets, '
+                    'useful for testing')
 parser.add_argument('--verbose', action='store_true',
                     help='print the ping command before executing')
 parser.add_argument('--version', action='version',
