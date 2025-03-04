@@ -25,6 +25,11 @@ ORIGIN = 0
 MAX = 0x10000
 MIN_SIZE = 1
 MAX_SIZE = round(MAX / MAGIC_NUMBER)
+ORIGIN_TYPE_REGEX = '^[oO]{1}$'
+CENTER_TYPE_REGEX = '^[cC]{1}$'
+ORIGIN_TYPE = 'O'
+CENTER_TYPE = 'C'
+NUMBER_REGEX = '^[0-9]+$'
 
 # Colors constants
 # RRGGBBAA regex with optional alpha channel
@@ -183,8 +188,10 @@ parser.add_argument('source', metavar='image|color',
                     'hexadecimal format; alpha channel is optional. '
                     'color_format: RRGGBB[AA] (str)')
 parser.add_argument('-c', '--coordinates', default=None,
-                    help='read canvas coordinates from a file. '
-                    'content_format: X,Y', metavar='FILE')
+                    help='read canvas coordinates from a file: with X, Y, and '
+                    'optional TYPE to indicate coordinates type. '
+                    f'TYPE: {ORIGIN_TYPE} (origin) or {CENTER_TYPE} (center). '
+                    'content_format: X,Y[,TYPE]', metavar='FILE')
 parser.add_argument('-x', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to start drawing at. '
                     f'default: {UNDEFINED} (UNDEFINED)')
@@ -242,18 +249,46 @@ if args.coordinates:
     if (args.x != UNDEFINED or args.y != UNDEFINED
             or args.cx != UNDEFINED or args.cy != UNDEFINED):
         print('Error: the --coordinates option can\'t be used together with '
-              '-x, -y, --cx, and --cy options')
+              '-x, -y, --cx, nor --cy options')
         sys.exit(1)
+    file = open(args.coordinates)
+    tmp_x = None
+    tmp_y = None
+    tmp_type = None
     try:
-        with open(args.coordinates) as f:
-            args.x, args.y = map(int, f.readline().split(','))
+        tmp_x, tmp_y, tmp_type = map(str, file.readline().split(','))
+        new_try = False
     except FileNotFoundError:
         print(f'Error: {args.coordinates} not found')
         sys.exit(1)
     except ValueError:
-        print(f'Error: {args.coordinates} must contain two integers separated '
-              'by a comma.\nExample: 123,456')
+        file.seek(0)
+        try:
+            tmp_x, tmp_y = map(str, file.readline().split(','))
+        except ValueError:
+            print(f'Error: {args.coordinates} must contain 2 or 3 values '
+                  'separated by commas')
+            sys.exit(1)
+    if not re.match(NUMBER_REGEX, tmp_x):
+        print(f'Error: the first value (X) in {args.coordinates} isn\'t valid')
         sys.exit(1)
+    if not re.match(NUMBER_REGEX, tmp_y):
+        print(f'Error: the second value (Y) in {args.coordinates} isn\'t '
+              'valid')
+        sys.exit(1)
+    if tmp_type is None:
+        tmp_type = ORIGIN_TYPE
+    if re.match(ORIGIN_TYPE_REGEX, tmp_type):
+        args.x = int(tmp_x)
+        args.y = int(tmp_y)
+    elif re.match(CENTER_TYPE_REGEX, tmp_type):
+        args.cx = int(tmp_x)
+        args.cy = int(tmp_y)
+    else:
+        print(f'Error: the third value (TYPE) in {args.coordinates} '
+              'isn\'t valid')
+        sys.exit(1)
+    file.close()
 if args.x != UNDEFINED:
     if args.cx != UNDEFINED:
         print('Error: the -x option can\'t be used together with the '
