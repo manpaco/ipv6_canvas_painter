@@ -185,6 +185,9 @@ parser.add_argument('source', metavar='image|color',
                     'argument must be an image file. The color must be in '
                     'hexadecimal format; alpha channel is optional. '
                     'color_format: RRGGBB[AA] (str)')
+parser.add_argument('-c', '--coordinates', default=None,
+                    help='read canvas coordinates from a file. '
+                    'content_format: X,Y', metavar='FILE')
 parser.add_argument('-x', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to start drawing at. '
                     f'default: {UNDEFINED} (UNDEFINED)')
@@ -215,9 +218,6 @@ parser.add_argument('-f', '--fill', action='store_true',
                     help='use the specified color to fill the area, instead '
                     'of drawing an image. You must specify both --width and '
                     '--height, or --x2 and --y2 options')
-parser.add_argument('-c', '--coordinates', default=None,
-                    help='read canvas coordinates from a file. '
-                    'content_format: X,Y', metavar='FILE')
 parser.add_argument('-d', '--delay', type=float, default=1,
                     help='the delay between each pixel in seconds. default: 1 '
                     '(float)')
@@ -228,12 +228,12 @@ parser.add_argument('-r', '--reverse', action='store_true',
                     help='draw the area in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip completely transparent pixels')
-parser.add_argument('--push', action='store_true',
-                    help='the draw area will be pushed into the canvas if it '
-                    'exceeds the boundaries')
 parser.add_argument('--overflow', action='store_true',
                     help='the draw area will be cropped if it exceds the '
                     'boundaries')
+parser.add_argument('--push', action='store_true',
+                    help='the draw area will be pushed into the canvas if it '
+                    'exceeds the boundaries')
 parser.add_argument('--dry-run', action='store_true',
                     help='run but don\'t send ICMP packets. '
                     'Useful to test commands')
@@ -244,9 +244,6 @@ parser.add_argument('--version', action='version',
 args = parser.parse_args()
 
 # Verify arguments
-if args.delay < 0:
-    print('Error: DELAY must be greater than or equal to 0')
-    sys.exit(1)
 if args.coordinates:
     if (args.x != UNDEFINED or args.y != UNDEFINED
             or args.cx != UNDEFINED or args.cy != UNDEFINED):
@@ -348,6 +345,9 @@ if args.y2 != UNDEFINED:
 if args.fill and (args.width == UNDEFINED or args.height == UNDEFINED):
     print('Error: the --fill option requires --width and --height, or '
           '--x2 and --y2 options')
+    sys.exit(1)
+if args.delay < 0:
+    print('Error: DELAY must be greater than or equal to 0')
     sys.exit(1)
 if args.overflow and args.push:
     print('Error: the --overflow and --push options are mutually exclusive')
