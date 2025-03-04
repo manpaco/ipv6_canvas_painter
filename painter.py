@@ -169,6 +169,8 @@ def exceeds(x, y, width, height):
     return x < ORIGIN or y < ORIGIN or x + width > MAX or y + height > MAX
 
 
+# --------------------------------- ARGUMENTS ---------------------------------
+
 # Parse arguments
 parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'ICMP packets (AKA pings) to an IPv6 '
@@ -245,7 +247,7 @@ parser.add_argument('--version', action='version',
                     version=f'%(prog)s v{VERSION}')
 args = parser.parse_args()
 
-# Verify arguments
+# Verify coordinates file
 if args.coordinates:
     if (args.x != UNDEFINED or args.y != UNDEFINED
             or args.cx != UNDEFINED or args.cy != UNDEFINED):
@@ -291,6 +293,8 @@ if args.coordinates:
               'isn\'t valid (verify that there are no spaces)')
         sys.exit(1)
     file.close()
+
+# Verify X and Y
 if args.x != UNDEFINED:
     if args.cx != UNDEFINED:
         print('Error: the -x option can\'t be used together with the '
@@ -317,6 +321,8 @@ if args.y != UNDEFINED:
         sys.exit(1)
 else:
     args.y = ORIGIN
+
+# Verify CX and CY
 if args.cx != UNDEFINED:
     if args.cx < ORIGIN:
         print(f'Error: CX must be greater than or equal to {ORIGIN}')
@@ -331,6 +337,8 @@ if args.cy != UNDEFINED:
     if args.cy >= MAX:
         print(f'Error: CY must be less than {MAX}')
         sys.exit(1)
+
+# Verify X2 and Y2
 if args.x2 != UNDEFINED:
     if args.width != UNDEFINED:
         print('Error: the --x2 option can\'t be usued together with the '
@@ -373,16 +381,24 @@ if args.y2 != UNDEFINED:
             print('Error: Y2 must be greater than or equal to X')
             sys.exit(1)
         args.height = args.y2 - args.y + 1
+
+# Verify delay
 if args.delay < 0:
     print('Error: DELAY must be greater than or equal to 0')
     sys.exit(1)
+
+# Verify fill
 if args.fill and (args.width == UNDEFINED or args.height == UNDEFINED):
     print('Error: the --fill option requires --width and --height, or '
           '--x2 and --y2 options')
     sys.exit(1)
+
+# Verify overflow and push
 if args.overflow and args.push:
     print('Error: the --overflow and --push options are mutually exclusive')
     sys.exit(1)
+
+# ------------------------------- END ARGUMENTS -------------------------------
 
 # Create the source
 if args.fill:
