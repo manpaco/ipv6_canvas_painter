@@ -190,7 +190,8 @@ parser.add_argument('source', metavar='image|color',
 parser.add_argument('-c', '--coordinates', default=None,
                     help='read canvas coordinates from a file: with X, Y, and '
                     'optional TYPE to indicate coordinates type. '
-                    f'TYPE: {ORIGIN_TYPE} (origin) or {CENTER_TYPE} (center). '
+                    f'TYPE values to use: {ORIGIN_TYPE} (origin, like -x and '
+                    f'-y) or {CENTER_TYPE} (center, like --cx and --cy). '
                     'content_format: X,Y[,TYPE]', metavar='FILE')
 parser.add_argument('-x', type=int, default=UNDEFINED,
                     help='the x coordinate of the canvas to start drawing at. '
@@ -270,11 +271,12 @@ if args.coordinates:
                   'separated by commas')
             sys.exit(1)
     if not re.match(NUMBER_REGEX, tmp_x):
-        print(f'Error: the first value (X) in {args.coordinates} isn\'t valid')
+        print(f'Error: the first value (X) in {args.coordinates} isn\'t valid '
+              '(verify that there are no spaces)')
         sys.exit(1)
     if not re.match(NUMBER_REGEX, tmp_y):
         print(f'Error: the second value (Y) in {args.coordinates} isn\'t '
-              'valid')
+              'valid (verify that there are no spaces)')
         sys.exit(1)
     if tmp_type is None:
         tmp_type = ORIGIN_TYPE
@@ -286,7 +288,7 @@ if args.coordinates:
         args.cy = int(tmp_y)
     else:
         print(f'Error: the third value (TYPE) in {args.coordinates} '
-              'isn\'t valid')
+              'isn\'t valid (verify that there are no spaces)')
         sys.exit(1)
     file.close()
 if args.x != UNDEFINED:
