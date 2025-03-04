@@ -402,13 +402,30 @@ if args.overflow and args.push:
 
 # ------------------------------- END ARGUMENTS -------------------------------
 
+# Compose coordinates
+more_str = ''
+tmp_x = args.x
+tmp_y = args.y
+if args.cx != UNDEFINED or args.cy != UNDEFINED:
+    if args.cx != UNDEFINED:
+        more_str += f' --> ({CENTER_TYPE},'
+        tmp_x = args.cx
+    else:
+        more_str += f' --> ({ORIGIN_TYPE},'
+    if args.cy != UNDEFINED:
+        more_str += f'{CENTER_TYPE})'
+        tmp_y = args.cy
+    else:
+        more_str += f'{ORIGIN_TYPE})'
+more_str = f' in ({tmp_x},{tmp_y}){more_str}'
+
 # Create the source
 if args.fill:
     source = Filling(args.source, args.width, args.height)
-    print(source)
+    print(str(source) + more_str)
 else:
     source = Bitmap(args.source)
-    print(source)
+    print(str(source) + more_str)
     source.set_size(args.width, args.height)
     width, height = source.get_size()
     if width < MIN_SIZE or height < MIN_SIZE:
@@ -470,15 +487,15 @@ virt_width = stop_width - start_x
 virt_height = stop_height - start_y
 virt_x = args.x + start_x
 virt_y = args.y + start_y
-print(f'Coordinates: {virt_x},{virt_y}')
 pixels = (virt_width) * (virt_height)
-more = ''
+more_str = ''
 if exceeds_var:
     if args.overflow:
-        more = ' (overflow)'
+        more_str = ' (overflow)'
     if args.push:
-        more = ' (push)'
-print(f'Area size: {virt_width}x{virt_height} with {pixels} pixels{more}')
+        more_str = ' (push)'
+print(f'Area: {virt_width}x{virt_height} with {pixels} pixels{more_str} in '
+      f'({virt_x},{virt_y})')
 
 # Ping command
 ping = 'ping -6 -c 1'
