@@ -172,7 +172,7 @@ def exceeds(x, y, width, height):
 # --------------------------------- ARGUMENTS ---------------------------------
 
 # Parse arguments
-parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
+parser = argparse.ArgumentParser(description='Paint on a canvas by sending '
                                  'ICMP packets (AKA pings) to an IPv6 '
                                  'address.',
                                  epilog='IMPORTANT: '
@@ -184,7 +184,7 @@ parser = argparse.ArgumentParser(description='Draw on a canvas by sending '
                                  'resized without keeping the aspect ratio.'
                                  )
 parser.add_argument('source', metavar='image|color',
-                    help='the image or color to draw. Use the --fill option '
+                    help='the image or color to paint. Use the --fill option '
                     'to fill with a color, but if you don\'t use that option '
                     'the argument must be an image file. The color must be in '
                     'hexadecimal format; alpha channel is optional. '
@@ -196,7 +196,7 @@ parser.add_argument('-c', '--coordinates', default=None,
                     f'and -y) or {CENTER_TYPE} (center, like --cx and --cy). '
                     'content_format: X,Y[,TYPE]', metavar='FILE')
 parser.add_argument('-x', type=int, default=UNDEFINED,
-                    help='the x coordinate of the canvas to start drawing at. '
+                    help='the x coordinate of the canvas to start painting. '
                     f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('-y', type=int, default=UNDEFINED,
                     help='similat to -x. '
@@ -208,13 +208,13 @@ parser.add_argument('--cy', type=int, default=UNDEFINED,
                     help='similar to --cx.'
                     f' default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('--x2', type=int, default=UNDEFINED,
-                    help='the x coordinate of the canvas to stop drawing at. '
+                    help='the x coordinate of the canvas to stop painting. '
                     f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('--y2', type=int, default=UNDEFINED,
                     help='similar to --x2. '
                     f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('--width', type=int, default=UNDEFINED,
-                    help='the width of the area to draw. '
+                    help='the width of the area to paint. '
                     f'default: {UNDEFINED} (UNDEFINED)')
 parser.add_argument('--height', type=int, default=UNDEFINED,
                     help='similar to --width. '
@@ -223,13 +223,13 @@ parser.add_argument('-d', '--delay', type=float, default=DELAY,
                     help='the delay between each pixel in seconds. '
                     f'default: {DELAY} (float)')
 parser.add_argument('-b', '--base-ip', default=BASE_IP,
-                    help=f'the first 64 bits of the IPv6 address to draw to. '
+                    help=f'the first 64 bits of the IPv6 address. '
                     f'default: {BASE_IP} (str)')
 parser.add_argument('-f', '--fill', action='store_true',
                     help='use the specified color to fill the area, instead '
-                    'of drawing an image.')
+                    'of painting an image.')
 parser.add_argument('-r', '--reverse', action='store_true',
-                    help='draw the area in reverse order')
+                    help='paint the area in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip completely transparent pixels')
 parser.add_argument('--overflow', action='store_true',
@@ -455,8 +455,8 @@ stop_width = width
 stop_height = height
 if exceeds_var:
     if not args.overflow and not args.push:
-        print('Error: you are trying to draw outside the canvas')
-        print('Use --overflow or --push to allow drawing')
+        print('Error: you are trying to paint outside the canvas')
+        print('Use --overflow or --push to allow painting')
         sys.exit(1)
     if args.overflow:
         if exceeds_x:
@@ -513,8 +513,8 @@ range_y = range(start_y, stop_height)
 if args.reverse:
     range_x = reversed(range_x)
     range_y = reversed(range_y)
-drawn = 0
-# Draw the source
+painted = 0
+# Paint the source
 for y in range_y:
     # Contrary to C/C++, it doesn't matter if you change the value of the loop
     # variable because on the next iteration it will be assigned the next
@@ -532,8 +532,8 @@ for y in range_y:
             print(command)
         if not args.dry_run:
             os.system(command)
-        drawn += 1
-        print(f'Drawn pixels: {drawn}/{pixels}', end='\r')
+        painted += 1
+        print(f'Painted pixels: {painted}/{pixels}', end='\r')
         time.sleep(args.delay)
 
 # Print the final message
