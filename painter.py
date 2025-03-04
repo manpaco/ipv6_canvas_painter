@@ -57,16 +57,18 @@ class Element:
         use_height = False
         has_zeros = self.width == 0 or self.height == 0
         if width != UNDEFINED:
-            if width < 1:
-                print('Error: WIDTH must be greater than or equal to 1')
+            if width < MIN_SIZE:
+                print('Error: WIDTH must be greater than or equal to '
+                      f'{MIN_SIZE}')
                 sys.exit(1)
             if width > MAX_SIZE:
                 print(f'Error: WIDTH must be less than or equal to {MAX_SIZE}')
                 sys.exit(1)
             use_width = True
         if height != UNDEFINED:
-            if height < 1:
-                print('Error: HEIGHT must be greater than or equal to 1')
+            if height < MIN_SIZE:
+                print('Error: HEIGHT must be greater than or equal to '
+                      f'{MIN_SIZE}')
                 sys.exit(1)
             if height > MAX_SIZE:
                 print('Error: HEIGHT must be less than or equal '
@@ -328,8 +330,8 @@ else:
     print(source)
     source.set_size(args.width, args.height)
     width, height = source.get_size()
-    if width < 1 or height < 1:
-        print('Error: the image must have at least 1 pixel')
+    if width < MIN_SIZE or height < MIN_SIZE:
+        print(f'Error: the image must have at least {MIN_SIZE} pixel')
         sys.exit(1)
     if width > MAX_SIZE or height > MAX_SIZE:
         print('Error: the image size must be less than or equal to '
