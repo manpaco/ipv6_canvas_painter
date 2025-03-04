@@ -382,6 +382,8 @@ if args.y2 != UNDEFINED:
             sys.exit(1)
         args.height = args.y2 - args.y + 1
 
+# INFO: The WIDTH and HEIGHT arguments are verified in the Element class
+
 # Verify delay
 if args.delay < 0:
     print('Error: DELAY must be greater than or equal to 0')
