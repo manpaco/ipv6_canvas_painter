@@ -16,6 +16,7 @@ VERSION = '0.1.0'
 # Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
 # canvas.openbased.com
 BASE_IP = '2602:f75c:c0::'
+DELAY = 0.2
 
 # Canvas constants
 MAGIC_NUMBER = 8
@@ -208,9 +209,9 @@ parser.add_argument('--width', type=int, default=UNDEFINED,
 parser.add_argument('--height', type=int, default=UNDEFINED,
                     help='similar to --width. '
                     f'default: {UNDEFINED} (UNDEFINED)')
-parser.add_argument('-d', '--delay', type=float, default=1,
-                    help='the delay between each pixel in seconds. default: 1 '
-                    '(float)')
+parser.add_argument('-d', '--delay', type=float, default=DELAY,
+                    help='the delay between each pixel in seconds. '
+                    f'default: {DELAY} (float)')
 parser.add_argument('-b', '--base-ip', default=BASE_IP,
                     help=f'the first 64 bits of the IPv6 address to draw to. '
                     f'default: {BASE_IP} (str)')
