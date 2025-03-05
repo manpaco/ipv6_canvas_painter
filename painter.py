@@ -101,7 +101,7 @@ class Element:
         return self.width * self.height
 
     def __str__(self):
-        return f'\'{self.source}\' {self.width}x{self.height} with ' \
+        return f'{self.source} {self.width}x{self.height} with ' \
                f'{self.pixels()} pixels'
 
 
