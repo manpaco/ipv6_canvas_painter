@@ -81,6 +81,10 @@ class Canvas:
             sys.exit(1)
         self.base_ip = base_ip
 
+    def paint_pixel(self, x, y,
+                    r=MAX_COLOR, g=MAX_COLOR, b=MAX_COLOR, a=MAX_COLOR):
+        pass
+
 
 # Element class to store: source, width, and height
 class Element:
