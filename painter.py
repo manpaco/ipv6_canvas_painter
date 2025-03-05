@@ -100,6 +100,9 @@ class Element:
     def pixels(self):
         return self.width * self.height
 
+    def valid_pixel(self, x, y):
+        return x >= 0 and x < self.width and y >= 0 and y < self.height
+
     def __str__(self):
         return f'{self.source} {self.width}x{self.height} with ' \
                f'{self.pixels()} pixels'
