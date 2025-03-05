@@ -76,9 +76,6 @@ BMP_MODE = 'RGBA'
 
 class Canvas:
     def __init__(self, base_ip):
-        self.set_base_ip(base_ip)
-
-    def set_base_ip(self, base_ip):
         if not re.match(IPV6_ADDR_REGEX, base_ip + DUMMY_IP):
             print('Error: the BASE_IP is not valid')
             sys.exit(1)
