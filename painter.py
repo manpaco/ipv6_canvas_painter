@@ -87,20 +87,22 @@ else:
 
 
 class Canvas:
-    def __init__(self, base_addr):
+    def __init__(self, base_addr, verbose, dry_run):
         if not re.match(IPV6_ADDR_REGEX, base_addr + DUMMY_ADDR):
             print('Error: the BASE_ADDR is not valid')
             sys.exit(1)
         self.base_addr = base_addr
+        self.verbose = verbose
+        self.dry_run = dry_run
 
     def paint_pixel(self, x, y,
                     r=MAX_COLOR, g=MAX_COLOR, b=MAX_COLOR, a=MAX_COLOR):
         address = f'{self.base_addr}{x:04x}:{y:04x}:' \
                   f'{r:02x}{g:02x}:{b:02x}{a:02x}'
         command = f'{PING} {address}{REDIRECTION}'
-        if args.verbose:
+        if self.verbose:
             print(command)
-        if not args.dry_run:
+        if not self.dry_run:
             os.system(command)
 
 
@@ -582,7 +584,7 @@ print(f'Area: {area_width}x{area_height} with {pixels} pixels{more_str} in '
       f'({area_x},{area_y})')
 
 # Create canvas
-canvas = Canvas(args.base_addr)
+canvas = Canvas(args.base_addr, args.verbose, args.dry_run)
 
 # Reverse ranges if needed
 range_x = range(start_x, stop_width)
