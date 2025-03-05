@@ -86,6 +86,7 @@ else:
     REDIRECTION = ' > /dev/null'
 
 
+# Canvas class to store: base_addr and execution options
 class Canvas:
     def __init__(self, base_addr, verbose, dry_run):
         if not re.match(IPV6_ADDR_REGEX, base_addr + DUMMY_ADDR):
