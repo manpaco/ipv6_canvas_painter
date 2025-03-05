@@ -254,7 +254,7 @@ class Filling(Element):
 
 
 def exceeds_values(x, y, width, height):
-    return x < ORIGIN, y < ORIGIN, x + width > MAX, y + height > MAX
+    return (x < ORIGIN, y < ORIGIN, x + width > MAX, y + height > MAX)
 
 
 def exceeds(x, y, width, height):
