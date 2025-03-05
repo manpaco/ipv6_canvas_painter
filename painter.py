@@ -73,6 +73,16 @@ COLOR_REGEX = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
 MAX_COLOR = 0xFF
 BMP_MODE = 'RGBA'
 
+# Ping command
+ping = 'ping -6 -c 1'
+if platform.system() == 'Windows':
+    ping = 'ping /6 /n 1'
+
+# Redirect output
+redirection = ' > /dev/null'
+if platform.system() == 'Windows':
+    redirection = ' > NUL'
+
 
 class Canvas:
     def __init__(self, base_ip):
@@ -562,16 +572,6 @@ if exceeds_var:
         more_str = ' (push)'
 print(f'Area: {virt_width}x{virt_height} with {pixels} pixels{more_str} in '
       f'({virt_x},{virt_y})')
-
-# Ping command
-ping = 'ping -6 -c 1'
-if platform.system() == 'Windows':
-    ping = 'ping /6 /n 1'
-
-# Redirect output
-redirection = ' > /dev/null'
-if platform.system() == 'Windows':
-    redirection = ' > NUL'
 
 # Reverse ranges if needed
 range_x = range(start_x, stop_width)
