@@ -95,8 +95,6 @@ class Canvas:
 
     def paint_pixel(self, x, y,
                     r=MAX_COLOR, g=MAX_COLOR, b=MAX_COLOR, a=MAX_COLOR):
-        if args.skip_transparent and a == 0:
-            return False
         address = f'{self.base_addr}{x:04x}:{y:04x}:' \
                   f'{r:02x}{g:02x}:{b:02x}{a:02x}'
         command = f'{PING} {address}{REDIRECTION}'
@@ -104,7 +102,6 @@ class Canvas:
             print(command)
         if not args.dry_run:
             os.system(command)
-        return True
 
 
 # Element class to store: source, width, and height
@@ -603,8 +600,9 @@ for y in range_y:
     for x in range_x:
         canvas_x = args.x + x
         r, g, b, a = source.get_pixel(x, y)
-        if not canvas.paint_pixel(canvas_x, canvas_y, r, g, b, a):
+        if args.skip_transparent and a == 0:
             continue
+        canvas.paint_pixel(canvas_x, canvas_y, r, g, b, a)
         painted += 1
         print(f'Painted pixels: {painted}/{pixels}', end='\r')
         time.sleep(args.delay)
