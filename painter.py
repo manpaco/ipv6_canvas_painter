@@ -294,7 +294,8 @@ parser.add_argument('-d', '--delay', type=float, default=DELAY,
                     help='the delay between each pixel in seconds. '
                     f'default: {DELAY} (float)')
 parser.add_argument('-b', '--base-ip', default=BASE_IP,
-                    help=f'the first 64 bits of the IPv6 address. '
+                    help=f'the first 64 bits of the IPv6 address with '
+                    'trailing colon (:) '
                     f'default: {BASE_IP} (str)')
 parser.add_argument('-f', '--fill', action='store_true',
                     help='use the specified color to fill the area, instead '
