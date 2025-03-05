@@ -597,11 +597,11 @@ for y in range_y:
     # Contrary to C/C++, it doesn't matter if you change the value of the loop
     # variable because on the next iteration it will be assigned the next
     # element from the list.
-    newy = args.y + y
+    canvas_y = args.y + y
     for x in range_x:
-        newx = args.x + x
+        canvas_x = args.x + x
         r, g, b, a = source.get_pixel(x, y)
-        if not canvas.paint_pixel(newx, newy, r, g, b, a):
+        if not canvas.paint_pixel(canvas_x, canvas_y, r, g, b, a):
             continue
         painted += 1
         print(f'Painted pixels: {painted}/{pixels}', end='\r')
