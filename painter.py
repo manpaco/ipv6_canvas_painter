@@ -18,7 +18,7 @@ VERSION = '0.1.0'
 # canvas.openbased.com
 BASE_IP = '2602:f75c:c0::'
 DUMMY_IP = 'ffff:ffff:ffff:ffff'
-IPV6_ADDR_REGEX = (r'('
+IPV6_ADDR_REGEX = (r'^('
                    # 1:2:3:4:5:6:7:8
                    r'([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|'
                    # 1::                              1:2:3:4:5:6:7::
@@ -51,7 +51,7 @@ IPV6_ADDR_REGEX = (r'('
                    # 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33
                    # (IPv4-Embedded IPv6 Address)
                    r'(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])'
-                   r')')
+                   r')$')
 DELAY = 0.2
 
 # Canvas constants
