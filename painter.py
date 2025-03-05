@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import math
 import time
 import argparse
 import platform
@@ -456,10 +457,11 @@ else:
 width, height = source.get_size()
 
 # Check the center
+# Use math.tunc instead of round
 if args.cx != UNDEFINED:
-    args.x = args.cx - round(width / 2)
+    args.x = args.cx - math.trunc(width / 2)
 if args.cy != UNDEFINED:
-    args.y = args.cy - round(height / 2)
+    args.y = args.cy - math.trunc(height / 2)
 
 # Verify canvas boundaries
 exceeds_x, exceeds_y, exceeds_x2, exceeds_y2 = exceeds_values(args.x, args.y,
