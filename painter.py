@@ -16,8 +16,8 @@ VERSION = '0.1.0'
 # VPS IPv6 address (first 64 bits)
 # Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
 # canvas.openbased.com
-BASE_IP = '2602:f75c:c0::'
-DUMMY_IP = 'ffff:ffff:ffff:ffff'
+BASE_ADDR = '2602:f75c:c0::'
+DUMMY_ADDR = 'ffff:ffff:ffff:ffff'
 IPV6_ADDR_REGEX = (r'^('
                    # 1:2:3:4:5:6:7:8
                    r'([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|'
@@ -87,17 +87,17 @@ else:
 
 
 class Canvas:
-    def __init__(self, base_ip):
-        if not re.match(IPV6_ADDR_REGEX, base_ip + DUMMY_IP):
-            print('Error: the BASE_IP is not valid')
+    def __init__(self, base_addr):
+        if not re.match(IPV6_ADDR_REGEX, base_addr + DUMMY_ADDR):
+            print('Error: the BASE_ADDR is not valid')
             sys.exit(1)
-        self.base_ip = base_ip
+        self.base_addr = base_addr
 
     def paint_pixel(self, x, y,
                     r=MAX_COLOR, g=MAX_COLOR, b=MAX_COLOR, a=MAX_COLOR):
         if args.skip_transparent and a == 0:
             return False
-        address = f'{self.base_ip}{x:04x}:{y:04x}:' \
+        address = f'{self.base_addr}{x:04x}:{y:04x}:' \
                   f'{r:02x}{g:02x}:{b:02x}{a:02x}'
         command = f'{PING} {address}{REDIRECTION}'
         if args.verbose:
@@ -315,10 +315,10 @@ parser.add_argument('--height', type=int, default=UNDEFINED,
 parser.add_argument('-d', '--delay', type=float, default=DELAY,
                     help='the delay between each pixel in seconds. '
                     f'default: {DELAY} (float)')
-parser.add_argument('-b', '--base-ip', default=BASE_IP,
+parser.add_argument('-b', '--base-addr', default=BASE_ADDR,
                     help=f'the first 64 bits of the IPv6 address with '
                     'trailing colon (:) '
-                    f'default: {BASE_IP} (str)')
+                    f'default: {BASE_ADDR} (str)')
 parser.add_argument('-f', '--fill', action='store_true',
                     help='use the specified color to fill the area, instead '
                     'of painting an image.')
@@ -585,7 +585,7 @@ print(f'Area: {area_width}x{area_height} with {pixels} pixels{more_str} in '
       f'({area_x},{area_y})')
 
 # Create canvas
-canvas = Canvas(args.base_ip)
+canvas = Canvas(args.base_addr)
 
 # Reverse ranges if needed
 range_x = range(start_x, stop_width)
