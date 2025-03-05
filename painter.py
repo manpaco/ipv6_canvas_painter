@@ -327,7 +327,7 @@ parser.add_argument('-r', '--reverse', action='store_true',
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip completely transparent pixels')
 parser.add_argument('--overflow', action='store_true',
-                    help='the area will be cropped if it exceds the '
+                    help='the area will be cropped if it exceeds the '
                     'boundaries')
 parser.add_argument('--push', action='store_true',
                     help='the area will be pushed into the canvas if it '
