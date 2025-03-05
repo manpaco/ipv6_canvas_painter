@@ -127,6 +127,13 @@ class Bitmap(Element):
     # with the calculated values
     def set_size(self, width, height):
         super().set_size(width, height)
+        if self.width < MIN_SIZE or self.height < MIN_SIZE:
+            print(f'Error: the image must have at least {MIN_SIZE} pixel')
+            sys.exit(1)
+        if self.width > MAX_SIZE or self.height > MAX_SIZE:
+            print('Error: the image size must be less than or equal to '
+                  f'{MAX_SIZE}x{MAX_SIZE}')
+            sys.exit(1)
         self.img = self.img.resize((self.width, self.height))
 
     def __str__(self):
@@ -426,14 +433,6 @@ else:
     source = Bitmap(args.source)
     print(str(source) + more_str)
     source.set_size(args.width, args.height)
-    width, height = source.get_size()
-    if width < MIN_SIZE or height < MIN_SIZE:
-        print(f'Error: the image must have at least {MIN_SIZE} pixel')
-        sys.exit(1)
-    if width > MAX_SIZE or height > MAX_SIZE:
-        print('Error: the image size must be less than or equal to '
-              f'{MAX_SIZE}x{MAX_SIZE}')
-        sys.exit(1)
 
 # Save the size of the source
 width, height = source.get_size()
