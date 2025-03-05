@@ -17,6 +17,41 @@ VERSION = '0.1.0'
 # Example: 2602:f75c:c0::XXXX:YYYY:RRGG:BBAA
 # canvas.openbased.com
 BASE_IP = '2602:f75c:c0::'
+DUMMY_IP = 'ffff:ffff:ffff:ffff'
+IPV6_ADDR_REGEX = (r'('
+                   # 1:2:3:4:5:6:7:8
+                   r'([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|'
+                   # 1::                              1:2:3:4:5:6:7::
+                   r'([0-9a-fA-F]{1,4}:){1,7}:|'
+                   # 1::8             1:2:3:4:5:6::8  1:2:3:4:5:6::8
+                   r'([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|'
+                   # 1::7:8           1:2:3:4:5::7:8  1:2:3:4:5::8
+                   r'([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|'
+                   # 1::6:7:8         1:2:3:4::6:7:8  1:2:3:4::8
+                   r'([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|'
+                   # 1::5:6:7:8       1:2:3::5:6:7:8  1:2:3::8
+                   r'([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|'
+                   # 1::4:5:6:7:8     1:2::4:5:6:7:8  1:2::8
+                   r'([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|'
+                   # 1::3:4:5:6:7:8   1::3:4:5:6:7:8  1::8
+                   r'[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|'
+                   # ::2:3:4:5:6:7:8  ::2:3:4:5:6:7:8 ::8       ::
+                   r':((:[0-9a-fA-F]{1,4}){1,7}|:)|'
+                   # fe80::7:8%eth0   fe80::7:8%1
+                   # (link-local IPv6 addresses with zone index)
+                   r'fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|'
+                   r'::(ffff(:0{1,4}){0,1}:){0,1}'
+                   r'((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}'
+                   # ::255.255.255.255   ::ffff:255.255.255.255
+                   # ::ffff:0:255.255.255.255
+                   # (IPv4-mapped IPv6 addresses and IPv4-translated addresses)
+                   r'(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|'
+                   r'([0-9a-fA-F]{1,4}:){1,4}:'
+                   r'((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}'
+                   # 2001:db8:3:4::192.0.2.33  64:ff9b::192.0.2.33
+                   # (IPv4-Embedded IPv6 Address)
+                   r'(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])'
+                   r')')
 DELAY = 0.2
 
 # Canvas constants
@@ -37,6 +72,17 @@ NUMBER_REGEX = '^[0-9]+$'
 COLOR_REGEX = r'^([0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?)$'
 MAX_COLOR = 0xFF
 BMP_MODE = 'RGBA'
+
+
+class Canvas:
+    def __init__(self, base_ip):
+        self.set_base_ip(base_ip)
+
+    def set_base_ip(self, base_ip):
+        if not re.match(IPV6_ADDR_REGEX, base_ip + DUMMY_IP):
+            print('Error: the BASE_IP is not valid')
+            sys.exit(1)
+        self.base_ip = base_ip
 
 
 # Element class to store: source, width, and height
