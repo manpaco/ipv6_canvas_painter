@@ -74,14 +74,16 @@ MAX_COLOR = 0xFF
 BMP_MODE = 'RGBA'
 
 # Ping command
-ping = 'ping -6 -c 1'
 if platform.system() == 'Windows':
-    ping = 'ping /6 /n 1'
+    PING = 'ping /6 /n 1'
+else:
+    PING = 'ping -6 -c 1'
 
-# Redirect output
-redirection = ' > /dev/null'
+# Output redirection
 if platform.system() == 'Windows':
-    redirection = ' > NUL'
+    REDIRECTION = ' > NUL'
+else:
+    REDIRECTION = ' > /dev/null'
 
 
 class Canvas:
@@ -97,7 +99,7 @@ class Canvas:
             return False
         address = f'{self.base_ip}{x:04x}:{y:04x}:' \
                   f'{r:02x}{g:02x}:{b:02x}{a:02x}'
-        command = f'{ping} {address}{redirection}'
+        command = f'{PING} {address}{REDIRECTION}'
         if args.verbose:
             print(command)
         if not args.dry_run:
@@ -568,19 +570,19 @@ if exceeds_var:
             sys.exit(1)
 
 # Show information about the area
-virt_width = stop_width - start_x
-virt_height = stop_height - start_y
-virt_x = args.x + start_x
-virt_y = args.y + start_y
-pixels = (virt_width) * (virt_height)
+area_width = stop_width - start_x
+area_height = stop_height - start_y
+area_x = args.x + start_x
+area_y = args.y + start_y
+pixels = (area_width) * (area_height)
 more_str = ''
 if exceeds_var:
     if args.overflow:
         more_str = ' (overflow)'
     if args.push:
         more_str = ' (push)'
-print(f'Area: {virt_width}x{virt_height} with {pixels} pixels{more_str} in '
-      f'({virt_x},{virt_y})')
+print(f'Area: {area_width}x{area_height} with {pixels} pixels{more_str} in '
+      f'({area_x},{area_y})')
 
 # Create canvas
 canvas = Canvas(args.base_ip)
