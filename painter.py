@@ -119,7 +119,7 @@ class Bitmap(Element):
         # Initializing element size (do not use self.set_size... nor
         # super().set_size...)
         self.width, self.height = self.img.size
-        self.assert_size()
+        self.assert_size(True)
 
     def get_pixel(self, x, y):
         return self.img.getpixel((x, y))
@@ -132,13 +132,18 @@ class Bitmap(Element):
         self.img = self.img.resize((self.width, self.height))
 
     # Ensure that parameters are valid
-    def assert_size(self):
+    def assert_size(self, init=False):
+        if init:
+            more_str = ' (opening)'
+        else:
+            more_str = ' (resizing)'
         if self.width < MIN_SIZE or self.height < MIN_SIZE:
-            print(f'Error: the image must have at least {MIN_SIZE} pixel')
+            print(f'Error: the image must have at least {MIN_SIZE} width and '
+                  f'height pixels{more_str}')
             sys.exit(1)
         if self.width > MAX_SIZE or self.height > MAX_SIZE:
             print('Error: the image size must be less than or equal to '
-                  f'{MAX_SIZE}x{MAX_SIZE}')
+                  f'{MAX_SIZE}x{MAX_SIZE}{more_str}')
             sys.exit(1)
 
     def __str__(self):
