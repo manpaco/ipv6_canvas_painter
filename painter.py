@@ -141,21 +141,20 @@ class Bitmap(Element):
 class Filling(Element):
     def __init__(self, source, width, height):
         super().__init__(source)
-        if not re.match(COLOR_REGEX, source):
-            print('Error: invalid color format')
-            sys.exit(1)
         self.set_color(source)
         self.set_size(width, height)
 
-    # If the filling has no alpha channel then return an extra value
     def get_pixel(self, x, y):
-        if len(self.color) < 4:
-            return self.color[0], self.color[1], self.color[2], MAX_COLOR
-        else:
-            return self.color
+        return self.color
 
     def set_color(self, color):
+        if not re.match(COLOR_REGEX, color):
+            print('Error: invalid color format')
+            sys.exit(1)
         self.color = ImageColor.getrgb(f'#{color}')
+        # If the color has no alpha channel then add an extra value
+        if len(self.color) < 4:
+            self.color += (MAX_COLOR,)
 
     def __str__(self):
         return 'Filling: #' + super().__str__()
