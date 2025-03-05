@@ -93,7 +93,16 @@ class Canvas:
 
     def paint_pixel(self, x, y,
                     r=MAX_COLOR, g=MAX_COLOR, b=MAX_COLOR, a=MAX_COLOR):
-        pass
+        if args.skip_transparent and a == 0:
+            return False
+        address = f'{self.base_ip}{x:04x}:{y:04x}:' \
+                  f'{r:02x}{g:02x}:{b:02x}{a:02x}'
+        command = f'{ping} {address}{redirection}'
+        if args.verbose:
+            print(command)
+        if not args.dry_run:
+            os.system(command)
+        return True
 
 
 # Element class to store: source, width, and height
@@ -573,6 +582,9 @@ if exceeds_var:
 print(f'Area: {virt_width}x{virt_height} with {pixels} pixels{more_str} in '
       f'({virt_x},{virt_y})')
 
+# Create canvas
+canvas = Canvas(args.base_ip)
+
 # Reverse ranges if needed
 range_x = range(start_x, stop_width)
 range_y = range(start_y, stop_height)
@@ -589,15 +601,8 @@ for y in range_y:
     for x in range_x:
         newx = args.x + x
         r, g, b, a = source.get_pixel(x, y)
-        if args.skip_transparent and a == 0:
+        if not canvas.paint_pixel(newx, newy, r, g, b, a):
             continue
-        address = f'{args.base_ip}{newx:04x}:{newy:04x}:' \
-                  f'{r:02x}{g:02x}:{b:02x}{a:02x}'
-        command = f'{ping} {address}{redirection}'
-        if args.verbose:
-            print(command)
-        if not args.dry_run:
-            os.system(command)
         painted += 1
         print(f'Painted pixels: {painted}/{pixels}', end='\r')
         time.sleep(args.delay)
