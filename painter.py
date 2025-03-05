@@ -125,6 +125,8 @@ class Bitmap(Element):
         self.assert_size(True)
 
     def get_pixel(self, x, y):
+        if not self.valid_pixel(x, y):
+            raise ValueError('not a valid image pixel', f'{x}', f'{y}')
         return self.img.getpixel((x, y))
 
     # Set bitmap size using the parent method and then resize the actual image
@@ -165,6 +167,8 @@ class Filling(Element):
         self.set_size(width, height)
 
     def get_pixel(self, x, y):
+        if not self.valid_pixel(x, y):
+            raise ValueError('not a valid filling pixel', f'{x}', f'{y}')
         return self.color
 
     def set_color(self, color):
@@ -185,7 +189,8 @@ def exceeds_values(x, y, width, height):
 
 
 def exceeds(x, y, width, height):
-    return x < ORIGIN or y < ORIGIN or x + width > MAX or y + height > MAX
+    vx, vy, vw, vh = exceeds_values(x, y, width, height)
+    return vx or vy or vw or vh
 
 
 # --------------------------------- ARGUMENTS ---------------------------------
