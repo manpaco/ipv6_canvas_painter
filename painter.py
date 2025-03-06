@@ -592,12 +592,9 @@ print(f'Area: {area_width}x{area_height} with {pixels} pixels{more_str} in '
 # Create canvas
 canvas = Canvas(args.base_addr, args.verbose, args.dry_run)
 
-# Reverse ranges if needed
+# Source ranges
 range_x = range(start_x, stop_width)
 range_y = range(start_y, stop_height)
-if args.reverse:
-    range_x = reversed(range_x)
-    range_y = reversed(range_y)
 
 # Allocate pool executor when needed
 if args.multithreading:
@@ -606,12 +603,20 @@ if args.multithreading:
 
 painted = 0
 # Paint the source
-for y in range_y:
+if args.reverse:
+    iter_y = reversed(range_y)
+else:
+    iter_y = iter(range_y)
+for y in iter_y:
     # Contrary to C/C++, it doesn't matter if you change the value of the loop
     # variable because on the next iteration it will be assigned the next
     # element from the list.
     canvas_y = args.y + y
-    for x in range_x:
+    if args.reverse:
+        iter_x = reversed(range_x)
+    else:
+        iter_x = iter(range_x)
+    for x in iter_x:
         canvas_x = args.x + x
         r, g, b, a = source.get_pixel(x, y)
         if args.skip_transparent and a == 0:
