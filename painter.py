@@ -601,8 +601,8 @@ if args.multithreading:
     canvas_futures = []
     executor = concurrent.futures.ThreadPoolExecutor(MAX_WORKERS)
 
-painted = 0
 # Paint the source
+painted = 0
 if args.reverse:
     iter_y = reversed(range_y)
 else:
@@ -632,6 +632,9 @@ for y in iter_y:
         painted += 1
         print(f'Painted pixels: {painted}/{pixels}', end='\r')
         time.sleep(args.delay)
+
+# Delete source
+del source
 
 # Print the final message
 print('\nDone!')
