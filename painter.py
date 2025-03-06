@@ -637,6 +637,10 @@ for y in iter_y:
         print(f'Painted pixels: {painted}/{pixels}', end='\r')
         time.sleep(args.delay)
 
+# Shutdown executor
+if args.multithreading:
+    executor.shutdown(wait=True)
+
 # Delete source
 del source
 
