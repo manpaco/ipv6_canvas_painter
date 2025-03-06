@@ -499,6 +499,10 @@ if args.overflow and args.push:
     print('Error: the --overflow and --push options are mutually exclusive')
     sys.exit(1)
 
+# Overrides delay when using multithreading
+if args.multithreading:
+    args.delay = 0
+
 # ------------------------------- END ARGUMENTS -------------------------------
 
 # Compose coordinates
