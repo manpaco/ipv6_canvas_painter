@@ -7,6 +7,7 @@ import math
 import time
 import argparse
 import platform
+import concurrent.futures
 from PIL import Image
 from PIL import ImageColor
 
@@ -53,6 +54,7 @@ IPV6_ADDR_REGEX = (r'^('
                    r'(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])'
                    r')$')
 DELAY = 0.2
+MAX_WORKERS = 3
 
 # Canvas constants
 MAGIC_NUMBER = 8
@@ -326,6 +328,9 @@ parser.add_argument('-r', '--reverse', action='store_true',
                     help='paint the area in reverse order')
 parser.add_argument('-s', '--skip-transparent', action='store_true',
                     help='skip completely transparent pixels')
+parser.add_argument('-m', '--multithreading', action='store_true',
+                    help='use multithreading to paint the canvas '
+                    f'(MAX_WORKERS={MAX_WORKERS})')
 parser.add_argument('--overflow', action='store_true',
                     help='the area will be cropped if it exceeds the '
                     'boundaries')
@@ -593,6 +598,12 @@ range_y = range(start_y, stop_height)
 if args.reverse:
     range_x = reversed(range_x)
     range_y = reversed(range_y)
+
+# Allocate pool executor when needed
+if args.multithreading:
+    canvas_futures = []
+    executor = concurrent.futures.ThreadPoolExecutor(MAX_WORKERS)
+
 painted = 0
 # Paint the source
 for y in range_y:
@@ -605,7 +616,14 @@ for y in range_y:
         r, g, b, a = source.get_pixel(x, y)
         if args.skip_transparent and a == 0:
             continue
-        canvas.paint_pixel(canvas_x, canvas_y, r, g, b, a)
+        if args.multithreading:
+            canvas_futures += [executor.submit(
+                canvas.paint_pixel, canvas_x, canvas_y, r, g, b, a)]
+            if (len(canvas_futures) % MAX_WORKERS) == 0:
+                concurrent.futures.wait(canvas_futures)
+                canvas_futures.clear()
+        else:
+            canvas.paint_pixel(canvas_x, canvas_y, r, g, b, a)
         painted += 1
         print(f'Painted pixels: {painted}/{pixels}', end='\r')
         time.sleep(args.delay)
