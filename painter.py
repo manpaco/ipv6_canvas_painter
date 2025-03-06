@@ -193,7 +193,7 @@ class Bitmap(Element):
         # Initializing element size (do not use self.set_size... nor
         # super().set_size...)
         self.width, self.height = self.img.size
-        self.assert_size(True)
+        self.assert_size(init=True)
 
     def get_pixel(self, x, y):
         if not self.valid_pixel(x, y):
